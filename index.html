@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Strictly prevent zooming or scaling on mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CPS Tester</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none; /* Prevents text highlighting */
+            -webkit-user-select: none;
+            overflow: hidden; /* Prevents screen bouncing/scrolling */
+        }
+        #click-btn {
+            width: 85%;
+            height: 50%;
+            background-color: #2196F3;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            
+            /* CRITICAL MOBILE FIXES */
+            touch-action: none; /* Kills browser gestures, zooming, and pull-to-refresh on the button */
+            -webkit-tap-highlight-color: transparent; /* Removes the annoying tap flash on iOS */
+        }
+        .stats {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #42A5F5;
+        }
+        .preset-btn {
+            padding: 12px 20px;
+            margin: 5px;
+            background-color: #333;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            touch-action: manipulation;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="timer">Time left: 5.0s</h1>
+    
+    <div>
+        <button class="preset-btn" onclick="setTime(1)">1s</button>
+        <button class="preset-btn" onclick="setTime(3)">3s</button>
+        <button class="preset-btn" onclick="setTime(5)">5s</button>
+        <button class="preset-btn" onclick="setTime(10)">10s</button>
+    </div>
+
+    <!-- Removed onclick, handled dynamically in JS for multi-touch -->
+    <button id="click-btn">START</button>
+
+    <div class="stats">
+        <span id="score-label">Clicks: 0</span> | 
+        <span id="cps-label" style="color: white;">CPS: 0.00</span>
+    </div>
+
+    <script>
+        let clicks = 0;
+        let isRunning = false;
+        let isFinished = false;
+        let isCooldown = false;
+        let duration = 5.0;
+        let timeLeft = duration;
+        let timerInterval;
+        let lastClickTime = 0;
+
+        const clickBtn = document.getElementById("click-btn");
+        const timeLabel = document.getElementById("timer");
+        const scoreLabel = document.getElementById("score-label");
+        const cpsLabel = document.getElementById("cps-label");
+
+        function setTime(seconds) {
+            if (isRunning) return;
+            duration = seconds;
+            timeLeft = seconds;
+            timeLabel.innerText = "Time left: " + timeLeft.toFixed(1) + "s";
+        }
+
+        // Listen for standard mouse clicks (Desktop)
+        clickBtn.addEventListener('mousedown', function(e) {
+            handleTap();
+        });
+
+        // Listen for exact screen touches (Mobile)
+        clickBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault(); // Stops the screen from zooming/scrolling on missed taps
+            
+            // Loop through every finger that just touched the screen
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                handleTap();
+            }
+        }, { passive: false });
+
+        function handleTap() {
+            // Block taps while the post-game cooldown is active
+            if (isCooldown) return;
+
+            // If game is over, the first tap resets the board
+            if (isFinished) {
+                resetGame();
+                return;
+            }
+
+            const now = Date.now();
+            
+            // Relaxed Anti-Cheat: Lowered from 15ms to 5ms to allow multi-finger spamming
+            if (now - lastClickTime < 5) return;
+            lastClickTime = now;
+
+            if (!isRunning) {
+                isRunning = true;
+                clicks = 1;
+                clickBtn.innerText = "CLICK FAST!";
+                clickBtn.style.backgroundColor = "#0A2440"; 
+                timerInterval = setInterval(updateTimer, 50); 
+            } else {
+                clicks++;
+            }
+
+            let elapsed = duration - timeLeft;
+            if (elapsed <= 0) elapsed = 0.001; 
+            let currentCPS = clicks / elapsed;
+
+            scoreLabel.innerText = "Clicks: " + clicks;
+            cpsLabel.innerText = "CPS: " + currentCPS.toFixed(2);
+        }
+
+        function updateTimer() {
+            timeLeft -= 0.05; 
+            if (timeLeft <= 0) {
+                timeLeft = 0;
+                endGame();
+            }
+            timeLabel.innerText = "Time left: " + Math.max(0, timeLeft).toFixed(1) + "s";
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            isFinished = true;
+            isCooldown = true; // Lock the button
+            
+            clickBtn.innerText = "PLAY AGAIN";
+            clickBtn.style.backgroundColor = "#2196F3"; 
+            
+            // 1-second delay so frantic clicking doesn't instantly restart the app
+            setTimeout(() => {
+                isCooldown = false;
+            }, 1000);
+        }
+
+        function resetGame() {
+            isFinished = false;
+            clicks = 0;
+            timeLeft = duration;
+            timeLabel.innerText = "Time left: " + timeLeft.toFixed(1) + "s";
+            scoreLabel.innerText = "Clicks: 0";
+            cpsLabel.innerText = "CPS: 0.00";
+            clickBtn.innerText = "START";
+        }
+    </script>
+</body>
+</html>
