@@ -2,180 +2,504 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Strictly prevent zooming or scaling on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CPS Tester</title>
+    <title>CPS Tester (Pro)</title>
     <style>
+        :root {
+            --accent-main: #2196F3;
+            --accent-hover: #1976D2;
+            --accent-flash: #0A2440;
+            --bg-color: #1a1a1a;
+            --panel-bg: #2d2d2d;
+            --text-main: #ffffff;
+        }
+
         body {
-            background-color: #1a1a1a;
-            color: white;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             height: 100vh;
             margin: 0;
-            user-select: none; /* Prevents text highlighting */
+            user-select: none;
             -webkit-user-select: none;
-            overflow: hidden; /* Prevents screen bouncing/scrolling */
+            overflow: hidden;
         }
+
+        /* Top Bar */
+        .header {
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .btn-small {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Main Game Area */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .time-selector {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .preset-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #custom-time {
+            width: 50px;
+            padding: 8px;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #pb-label {
+            color: var(--accent-main);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
         #click-btn {
             width: 85%;
-            height: 50%;
-            background-color: #2196F3;
+            height: 40vh;
+            background-color: var(--accent-main);
             color: white;
-            font-size: 48px;
+            font-size: 42px;
             font-weight: bold;
             border: none;
-            border-radius: 50px;
+            border-radius: 40px;
             cursor: pointer;
-            margin-top: 20px;
-            
-            /* CRITICAL MOBILE FIXES */
-            touch-action: none; /* Kills browser gestures, zooming, and pull-to-refresh on the button */
-            -webkit-tap-highlight-color: transparent; /* Removes the annoying tap flash on iOS */
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.1s;
         }
+
         .stats {
+            display: flex;
+            gap: 30px;
             font-size: 28px;
             font-weight: bold;
             margin-top: 20px;
-            color: #42A5F5;
         }
-        .preset-btn {
-            padding: 12px 20px;
-            margin: 5px;
-            background-color: #333;
-            color: white;
-            font-weight: bold;
-            border: none;
+
+        #score-label { color: var(--accent-main); }
+        
+        /* Modals (Settings, Leaderboard, End Screen) */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .modal-content {
+            background: var(--panel-bg);
+            padding: 30px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal h2 { margin-top: 0; color: var(--accent-main); }
+        
+        /* Graph */
+        canvas {
+            background: var(--bg-color);
             border-radius: 8px;
-            font-size: 16px;
-            touch-action: manipulation;
+            margin: 15px 0;
+            width: 100%;
+            height: 150px;
         }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .color-swatch {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .leaderboard-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            font-weight: bold;
+        }
+
+        .danger-btn { background-color: #E53935; }
+        .success-btn { background-color: #4CAF50; }
+        .action-btn { background-color: var(--accent-main); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 18px; margin: 5px; width: 100%; cursor: pointer;}
     </style>
 </head>
 <body>
-    <h1 id="timer">Time left: 5.0s</h1>
-    
-    <div>
-        <button class="preset-btn" onclick="setTime(1)">1s</button>
-        <button class="preset-btn" onclick="setTime(3)">3s</button>
-        <button class="preset-btn" onclick="setTime(5)">5s</button>
-        <button class="preset-btn" onclick="setTime(10)">10s</button>
+
+    <div class="header">
+        <button class="btn-small" onclick="showModal('settings-modal')">⚙️ Settings</button>
+        <button class="btn-small" onclick="showLeaderboard()">🏆 Leaderboard</button>
     </div>
 
-    <!-- Removed onclick, handled dynamically in JS for multi-touch -->
-    <button id="click-btn">START</button>
+    <div class="game-area" id="game-area">
+        <h1 id="timer">Time left: 5.0s</h1>
+        
+        <div class="time-selector">
+            <button class="preset-btn" onclick="setTime(1)">1s</button>
+            <button class="preset-btn" onclick="setTime(3)">3s</button>
+            <button class="preset-btn" onclick="setTime(5)">5s</button>
+            <button class="preset-btn" onclick="setTime(10)">10s</button>
+            <input type="number" id="custom-time" value="5" onchange="updateCustomTime()">
+        </div>
 
-    <div class="stats">
-        <span id="score-label">Clicks: 0</span> | 
-        <span id="cps-label" style="color: white;">CPS: 0.00</span>
+        <div id="pb-label">Personal Best: 0.00 CPS</div>
+
+        <button id="click-btn">START</button>
+
+        <div class="stats">
+            <span id="score-label">Clicks: 0</span>
+            <span id="cps-label">CPS: 0.00</span>
+        </div>
+    </div>
+
+    <!-- End Screen Modal -->
+    <div class="modal" id="end-modal">
+        <div class="modal-content">
+            <h2>Test Complete!</h2>
+            <h1 id="end-cps" style="margin: 10px 0;">0.00 CPS</h1>
+            <p id="end-stats" style="color: #aaa; margin: 0 0 15px 0;">Clicks: 0 | Rank: N/A</p>
+            
+            <canvas id="cps-graph"></canvas>
+            
+            <p id="end-pb-alert" style="font-weight: bold;"></p>
+            
+            <button class="action-btn" onclick="copyResults()">📋 Copy Result</button>
+            <button class="action-btn" onclick="resetGame()">🔄 Play Again</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <h2>Settings</h2>
+            <p>Theme Color</p>
+            <div class="color-grid" id="color-grid"></div>
+            
+            <hr style="border-color: #444; margin: 20px 0;">
+            
+            <button class="action-btn danger-btn" id="wipe-btn" onclick="wipeLeaderboard()">🗑 Wipe Leaderboard</button>
+            <button class="action-btn success-btn" onclick="hideModals()">Done</button>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div class="modal" id="leaderboard-modal">
+        <div class="modal-content">
+            <h2 id="lb-title">Top 5: 5.0s</h2>
+            <div id="lb-content" style="margin-bottom: 20px;"></div>
+            <button class="action-btn danger-btn" onclick="hideModals()">Close</button>
+        </div>
     </div>
 
     <script>
+        const colors = {
+            "Pink": ["#E91E63", "#4A0920"],
+            "Red": ["#E53935", "#380B0A"],
+            "Orange": ["#FF9800", "#4A2C00"],
+            "Yellow": ["#FFB300", "#4A3300"],
+            "Green": ["#2CC985", "#0B3322"],
+            "Blue": ["#2196F3", "#0A2440"],
+            "Indigo": ["#3F51B5", "#0A1138"],
+            "Violet": ["#9C27B0", "#2A0A30"]
+        };
+
+        let currentCategory = "5.0";
+        let duration = 5.0;
+        let timeLeft = 5.0;
         let clicks = 0;
         let isRunning = false;
         let isFinished = false;
-        let isCooldown = false;
-        let duration = 5.0;
-        let timeLeft = duration;
         let timerInterval;
         let lastClickTime = 0;
+        let clickTimestamps = [];
+        let highScores = JSON.parse(localStorage.getItem('cps_highscores')) || { "1.0": [], "3.0": [], "5.0": [], "10.0": [], "60.0": [], "custom": [] };
 
+        const root = document.documentElement;
         const clickBtn = document.getElementById("click-btn");
         const timeLabel = document.getElementById("timer");
         const scoreLabel = document.getElementById("score-label");
         const cpsLabel = document.getElementById("cps-label");
+        const pbLabel = document.getElementById("pb-label");
+        const customTimeInput = document.getElementById("custom-time");
+
+        // Initialization
+        setupColors();
+        updatePBDisplay();
+
+        function setupColors() {
+            const grid = document.getElementById("color-grid");
+            for (const [name, hexes] of Object.entries(colors)) {
+                let swatch = document.createElement("div");
+                swatch.className = "color-swatch";
+                swatch.style.backgroundColor = hexes[0];
+                swatch.onclick = () => applyColor(name);
+                grid.appendChild(swatch);
+            }
+            applyColor(localStorage.getItem('cps_color') || "Blue");
+        }
+
+        function applyColor(name) {
+            const hexes = colors[name];
+            root.style.setProperty('--accent-main', hexes[0]);
+            root.style.setProperty('--accent-flash', hexes[1]);
+            localStorage.setItem('cps_color', name);
+        }
 
         function setTime(seconds) {
             if (isRunning) return;
-            duration = seconds;
-            timeLeft = seconds;
-            timeLabel.innerText = "Time left: " + timeLeft.toFixed(1) + "s";
+            duration = parseFloat(seconds);
+            timeLeft = duration;
+            customTimeInput.value = duration;
+            currentCategory = [1, 3, 5, 10, 60].includes(duration) ? duration.toFixed(1) : "custom";
+            timeLabel.innerText = `Time left: ${timeLeft.toFixed(1)}s`;
+            updatePBDisplay();
         }
 
-        // Listen for standard mouse clicks (Desktop)
-        clickBtn.addEventListener('mousedown', function(e) {
-            handleTap();
-        });
+        function updateCustomTime() {
+            let val = parseFloat(customTimeInput.value);
+            if (isNaN(val) || val <= 0) val = 5.0;
+            setTime(val);
+        }
 
-        // Listen for exact screen touches (Mobile)
-        clickBtn.addEventListener('touchstart', function(e) {
-            e.preventDefault(); // Stops the screen from zooming/scrolling on missed taps
-            
-            // Loop through every finger that just touched the screen
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                handleTap();
-            }
+        function updatePBDisplay() {
+            let scores = highScores[currentCategory] || [];
+            let topCps = scores.length > 0 ? scores[0].cps : 0.00;
+            let catName = currentCategory === "custom" ? "Custom" : `${currentCategory}s`;
+            pbLabel.innerText = `Personal Best (${catName}): ${topCps.toFixed(2)} CPS`;
+        }
+
+        // Gameplay Logic
+        clickBtn.addEventListener('mousedown', (e) => { if (e.button === 0) handleTap(); });
+        clickBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            for (let i = 0; i < e.changedTouches.length; i++) handleTap();
         }, { passive: false });
 
         function handleTap() {
-            // Block taps while the post-game cooldown is active
-            if (isCooldown) return;
-
-            // If game is over, the first tap resets the board
-            if (isFinished) {
-                resetGame();
-                return;
-            }
-
+            if (isFinished) return;
             const now = Date.now();
             
-            // Relaxed Anti-Cheat: Lowered from 15ms to 5ms to allow multi-finger spamming
+            // 5ms Anti-cheat
             if (now - lastClickTime < 5) return;
             lastClickTime = now;
 
             if (!isRunning) {
                 isRunning = true;
                 clicks = 1;
+                clickTimestamps = [0];
                 clickBtn.innerText = "CLICK FAST!";
-                clickBtn.style.backgroundColor = "#0A2440"; 
-                timerInterval = setInterval(updateTimer, 50); 
+                clickBtn.style.backgroundColor = "var(--accent-flash)";
+                timerInterval = setInterval(updateTimer, 50);
             } else {
                 clicks++;
+                let elapsed = duration - timeLeft;
+                clickTimestamps.push(elapsed);
             }
 
             let elapsed = duration - timeLeft;
-            if (elapsed <= 0) elapsed = 0.001; 
-            let currentCPS = clicks / elapsed;
-
-            scoreLabel.innerText = "Clicks: " + clicks;
-            cpsLabel.innerText = "CPS: " + currentCPS.toFixed(2);
+            let currentCPS = clicks / Math.max(elapsed, 0.001);
+            scoreLabel.innerText = `Clicks: ${clicks}`;
+            cpsLabel.innerText = `CPS: ${currentCPS.toFixed(2)}`;
         }
 
         function updateTimer() {
-            timeLeft -= 0.05; 
+            timeLeft -= 0.05;
             if (timeLeft <= 0) {
                 timeLeft = 0;
                 endGame();
             }
-            timeLabel.innerText = "Time left: " + Math.max(0, timeLeft).toFixed(1) + "s";
+            timeLabel.innerText = `Time left: ${timeLeft.toFixed(1)}s`;
         }
 
         function endGame() {
             clearInterval(timerInterval);
             isRunning = false;
             isFinished = true;
-            isCooldown = true; // Lock the button
             
-            clickBtn.innerText = "PLAY AGAIN";
-            clickBtn.style.backgroundColor = "#2196F3"; 
+            let finalCPS = clicks / duration;
+            let rank = finalCPS < 5 ? "🐢 Turtle" : finalCPS < 8 ? "🚶 Walker" : finalCPS < 12 ? "🏃 Sprinter" : "⚡ Lightning";
             
-            // 1-second delay so frantic clicking doesn't instantly restart the app
-            setTimeout(() => {
-                isCooldown = false;
-            }, 1000);
+            // Leaderboard Logic
+            let scores = highScores[currentCategory] || [];
+            let isPB = scores.length === 0 || finalCPS > scores[0].cps;
+            scores.push({cps: finalCPS, clicks: clicks});
+            scores.sort((a, b) => b.cps - a.cps);
+            highScores[currentCategory] = scores.slice(0, 5);
+            localStorage.setItem('cps_highscores', JSON.stringify(highScores));
+            
+            // UI Updates
+            document.getElementById("end-cps").innerText = `${finalCPS.toFixed(2)} CPS`;
+            document.getElementById("end-stats").innerText = `Total Clicks: ${clicks} | Rank: ${rank}`;
+            
+            let pbAlert = document.getElementById("end-pb-alert");
+            if (isPB) {
+                pbAlert.innerText = "🏆 NEW PERSONAL BEST! 🏆";
+                pbAlert.style.color = "#4CAF50";
+            } else {
+                pbAlert.innerText = `PB: ${scores[0].cps.toFixed(2)} CPS`;
+                pbAlert.style.color = "#aaa";
+            }
+
+            drawGraph();
+            showModal('end-modal');
+        }
+
+        function drawGraph() {
+            const canvas = document.getElementById('cps-graph');
+            const ctx = canvas.getContext('2d');
+            // Responsive canvas sizing
+            canvas.width = canvas.parentElement.clientWidth - 60; 
+            canvas.height = 150;
+
+            let numBins = Math.max(Math.floor(duration * 2), 5);
+            let binSize = duration / numBins;
+            let bins = new Array(numBins).fill(0);
+
+            clickTimestamps.forEach(t => {
+                let index = Math.min(Math.floor(t / binSize), numBins - 1);
+                if (index >= 0) bins[index]++;
+            });
+
+            let cpsPerBin = bins.map(count => count / binSize);
+            let maxCPS = Math.max(...cpsPerBin, 5);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = getComputedStyle(root).getPropertyValue('--accent-main').trim();
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            
+            ctx.beginPath();
+            for (let i = 0; i < numBins; i++) {
+                let x = (i / (numBins - 1)) * canvas.width;
+                let y = canvas.height - ((cpsPerBin[i] / maxCPS) * (canvas.height - 20)) - 10;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            
+            // Draw points
+            ctx.fillStyle = "#fff";
+            for (let i = 0; i < numBins; i++) {
+                let x = (i / (numBins - 1)) * canvas.width;
+                let y = canvas.height - ((cpsPerBin[i] / maxCPS) * (canvas.height - 20)) - 10;
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
 
         function resetGame() {
+            hideModals();
             isFinished = false;
             clicks = 0;
             timeLeft = duration;
-            timeLabel.innerText = "Time left: " + timeLeft.toFixed(1) + "s";
+            timeLabel.innerText = `Time left: ${timeLeft.toFixed(1)}s`;
             scoreLabel.innerText = "Clicks: 0";
             cpsLabel.innerText = "CPS: 0.00";
             clickBtn.innerText = "START";
+            clickBtn.style.backgroundColor = "var(--accent-main)";
+            updatePBDisplay();
+        }
+
+        // Modal Management
+        function showModal(id) { document.getElementById(id).style.display = "flex"; }
+        function hideModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = "none"); }
+
+        function showLeaderboard() {
+            let catName = currentCategory === "custom" ? "Custom" : `${currentCategory}s`;
+            document.getElementById("lb-title").innerText = `Top 5: ${catName}`;
+            
+            let scores = highScores[currentCategory] || [];
+            let html = "";
+            if (scores.length === 0) {
+                html = "<p style='color: gray'>No scores yet!</p>";
+            } else {
+                scores.forEach((s, i) => {
+                    let color = i === 0 ? "#FF9800" : "white";
+                    html += `<div class="leaderboard-row" style="color: ${color}">
+                                <span>#${i+1}</span>
+                                <span>${s.cps.toFixed(2)} CPS</span>
+                                <span style="color: gray; font-size: 12px; margin-top: 3px;">(${s.clicks})</span>
+                             </div>`;
+                });
+            }
+            document.getElementById("lb-content").innerHTML = html;
+            showModal('leaderboard-modal');
+        }
+
+        function wipeLeaderboard() {
+            if(confirm("Are you sure? This deletes all saved scores.")) {
+                highScores = { "1.0": [], "3.0": [], "5.0": [], "10.0": [], "60.0": [], "custom": [] };
+                localStorage.setItem('cps_highscores', JSON.stringify(highScores));
+                updatePBDisplay();
+                
+                let btn = document.getElementById("wipe-btn");
+                btn.innerText = "Wiped! ✅";
+                btn.classList.replace("danger-btn", "success-btn");
+                setTimeout(() => {
+                    btn.innerText = "🗑 Wipe Leaderboard";
+                    btn.classList.replace("success-btn", "danger-btn");
+                }, 2000);
+            }
+        }
+
+        function copyResults() {
+            let finalCPS = (clicks / duration).toFixed(2);
+            let catName = currentCategory === "custom" ? "Custom" : `${currentCategory}s`;
+            navigator.clipboard.writeText(`🎮 CPS Tester: ${finalCPS} CPS (${clicks} clicks in ${catName})!`);
+            alert("Copied to clipboard!");
         }
     </script>
 </body>
