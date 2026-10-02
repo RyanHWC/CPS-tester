@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Deep Slate Background -->
+  <rect width="512" height="512" rx="115" fill="#0F172A"/>
+  
+  <!-- Clean, Minimalist Mouse Outline -->
+  <rect x="176" y="126" width="160" height="260" rx="80" fill="none" stroke="#38BDF8" stroke-width="28"/>
+  
+  <!-- Crisp Scroll Wheel / Click Indicator -->
+  <line x1="256" y1="186" x2="256" y2="246" stroke="#FFFFFF" stroke-width="28" stroke-linecap="round"/>
+  
+  <!-- Subtle Minimalist Accent Dots (Speed Motif) -->
+  <circle cx="256" cy="436" r="8" fill="#38BDF8"/>
+  <circle cx="256" cy="466" r="5" fill="#38BDF8" opacity="0.4"/>
+</svg>
