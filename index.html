@@ -112,11 +112,23 @@
         body.light-mode .mg-menu-btn { background-color: #eee; border-color: #ccc; color: #121212; }
         .mg-menu-btn:hover { border-color: var(--accent-main); }
         .mg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .mg-top-stats { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; font-size: 18px; }
         .mg-back-btn { background-color: #555; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px;}
         
+        /* 1-Player Minigame specifics */
+        #mg-target-area { width: 100%; height: 35vh; background-color: var(--bg-color); border-radius: 10px; position: relative; overflow: hidden; touch-action: none; margin-bottom: 15px; }
+        #mg-target { display: none; position: absolute; width: 50px; height: 50px; background-color: var(--accent-main); border-radius: 50%; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        #mg-react-area { width: 100%; height: 35vh; background-color: #555; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; cursor: pointer; touch-action: none; text-align: center; padding: 10px; box-sizing: border-box; }
+        #mg-sprint-btn { width: 100%; height: 35vh; background-color: var(--accent-main); border-radius: 20px; border: none; color: white; font-size: 40px; font-weight: bold; cursor: pointer; touch-action: none; -webkit-tap-highlight-color: transparent; }
+        #mg-sprint-btn:active { transform: scale(0.95); }
+        #mg-grid-area { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; aspect-ratio: 1; background-color: var(--bg-color); padding: 10px; border-radius: 10px; box-sizing: border-box; touch-action: none; margin-bottom: 15px;}
+        .grid-cell { background-color: #444; border-radius: 8px; cursor: pointer; transition: background-color 0.1s; -webkit-tap-highlight-color: transparent; }
+        body.light-mode .grid-cell { background-color: #ddd; }
+        .grid-cell.active { background-color: var(--accent-main); }
+
         /* 2-Player Versus */
         .vs-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; flex-direction: column; z-index: 20; overflow: hidden; touch-action: none;}
-        .vs-half { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; cursor: pointer; -webkit-tap-highlight-color: transparent;}
+        .vs-half { height: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; cursor: pointer; -webkit-tap-highlight-color: transparent; }
         .vs-p1 { background-color: var(--p1-color); transform: rotate(180deg); }
         .vs-p2 { background-color: var(--p2-color); }
         .vs-score { font-size: 80px; font-weight: bold; color: white; margin: 0; pointer-events: none;}
@@ -124,11 +136,11 @@
         .vs-timer-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; color: white; padding: 15px 30px; border-radius: 30px; font-size: 32px; font-weight: bold; z-index: 25; pointer-events: none; border: 4px solid #fff;}
         .vs-close-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.5); color: white; border: 2px solid white; padding: 8px 15px; border-radius: 8px; z-index: 30; font-weight: bold; cursor: pointer;}
         
-        /* Tug of War Overlay */
-        .tug-bar-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 22; pointer-events: none; display: flex; flex-direction: column;}
-        .tug-red { background-color: var(--p1-color); width: 100%; transition: height 0.1s; }
-        .tug-blue { background-color: var(--p2-color); width: 100%; flex-grow: 1; transition: height 0.1s;}
-        .tug-line { width: 100%; height: 10px; background: white; box-shadow: 0 0 15px rgba(255,255,255,0.8); z-index: 23;}
+        /* True Rope Tug of War */
+        .tug-rope-container { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 10px; height: 100%; background: #222; z-index: 22; pointer-events: none; display: none;}
+        .tug-knot { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: white; border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,255,0.9); transition: top 0.05s linear; border: 5px solid #111; }
+        .tug-winzone-p1 { position: absolute; top: 0; left: -20px; width: 50px; height: 15%; background: rgba(229,57,53,0.4); border-bottom: 2px dashed #E53935; }
+        .tug-winzone-p2 { position: absolute; bottom: 0; left: -20px; width: 50px; height: 15%; background: rgba(33,150,243,0.4); border-top: 2px dashed #2196F3; }
 
         /* Leaderboard Tabs */
         .lb-tabs { display: flex; width: 100%; margin-bottom: 15px; background: #333; border-radius: 8px; overflow: hidden; }
@@ -186,7 +198,6 @@
                     <h2 style="margin: 0;">Minigames</h2>
                     <button class="btn-small danger-btn" style="width: auto;" onclick="closeMinigames()">Close</button>
                 </div>
-                <!-- Adding 2 Player Menu -->
                 <button class="mg-menu-btn" style="border-color: #E91E63;" onclick="showGame('versus')">👯 2 Player (Versus)</button>
                 <button class="mg-menu-btn" onclick="showGame('target')">🎯 Target Practice</button>
                 <button class="mg-menu-btn" onclick="showGame('react')">⚡ Reaction Time</button>
@@ -202,11 +213,67 @@
                 </div>
                 <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Place your phone flat on a table between you and a friend.</p>
                 <button class="action-btn accent-btn" onclick="startVersus('classic')">⚔️ Classic Mode (10s)</button>
-                <button class="action-btn theme-btn" onclick="startVersus('tug')">🧵 Tug of War</button>
+                <button class="action-btn theme-btn" onclick="startVersus('tug')">🧵 Rope Tug of War</button>
             </div>
             
-            <!-- Other Minigame stubs (Reused from previous logic) -->
-            <div id="mg-target-screen" style="display:none;">...</div><div id="mg-react-screen" style="display:none;">...</div><div id="mg-sprint-screen" style="display:none;">...</div><div id="mg-grid-screen" style="display:none;">...</div>
+            <!-- Target Practice -->
+            <div id="mg-target-screen" style="display: none;">
+                <div class="mg-header">
+                    <h2 style="margin: 0;">Target Practice</h2>
+                    <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                </div>
+                <div class="mg-top-stats">
+                    <span id="tg-timer-label">Time: 10.0s</span>
+                    <span id="tg-score-label" style="color: var(--accent-main);">Hits: 0</span>
+                </div>
+                <div id="mg-target-area">
+                    <button id="tg-start-btn" class="action-btn accent-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%;" onclick="startTargetGame()">START</button>
+                    <div id="mg-target" onmousedown="hitTarget(event)" ontouchstart="hitTarget(event)"></div>
+                </div>
+                <p id="tg-final" style="font-weight: bold; display: none;">Final Score: 0 Hits!</p>
+            </div>
+
+            <!-- Reaction Time -->
+            <div id="mg-react-screen" style="display: none;">
+                <div class="mg-header">
+                    <h2 style="margin: 0;">Reaction Time</h2>
+                    <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                </div>
+                <div id="mg-react-area" onmousedown="handleReactClick(event)" ontouchstart="handleReactClick(event)">
+                    Click to Start
+                </div>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 15px;">Click immediately when the box turns green!</p>
+            </div>
+
+            <!-- 100-Click Sprint -->
+            <div id="mg-sprint-screen" style="display: none;">
+                <div class="mg-header">
+                    <h2 style="margin: 0;">100-Click Sprint</h2>
+                    <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                </div>
+                <div class="mg-top-stats">
+                    <span id="sp-timer-label">Time: 0.00s</span>
+                    <span id="sp-score-label" style="color: var(--accent-main);">0 / 100</span>
+                </div>
+                <button id="mg-sprint-btn" onmousedown="handleSprintClick(event)" ontouchstart="handleSprintClick(event)">START</button>
+                <p id="sp-final" style="font-weight: bold; display: none; font-size: 18px; margin-top: 15px;">Final Time: 0.00s!</p>
+                <button id="sp-reset-btn" class="action-btn theme-btn" style="display:none; margin-top: 10px;" onclick="resetSprint()">Play Again</button>
+            </div>
+
+            <!-- Grid Mode -->
+            <div id="mg-grid-screen" style="display: none;">
+                <div class="mg-header">
+                    <h2 style="margin: 0;">Grid Mode</h2>
+                    <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                </div>
+                <div class="mg-top-stats">
+                    <span id="gr-timer-label">Time: 10.0s</span>
+                    <span id="gr-score-label" style="color: var(--accent-main);">Score: 0</span>
+                </div>
+                <div id="mg-grid-area"></div>
+                <button id="gr-start-btn" class="action-btn accent-btn" onclick="startGridGame()">START GAME</button>
+                <p id="gr-final" style="font-weight: bold; display: none; font-size: 18px;">Final Score: 0!</p>
+            </div>
         </div>
     </div>
 
@@ -215,19 +282,19 @@
         <button class="vs-close-btn" onclick="exitVersus()">Exit</button>
         <div id="vs-timer" class="vs-timer-overlay">READY</div>
         
-        <!-- Tug of War Visuals -->
-        <div id="vs-tug-layer" class="tug-bar-container" style="display: none;">
-            <div id="tug-red-fill" class="tug-red" style="height: 50%;"></div>
-            <div class="tug-line"></div>
-            <div class="tug-blue"></div>
+        <!-- True Rope Tug Visuals -->
+        <div id="vs-rope-container" class="tug-rope-container">
+            <div class="tug-winzone-p1"></div>
+            <div id="vs-knot" class="tug-knot"></div>
+            <div class="tug-winzone-p2"></div>
         </div>
 
         <div id="vs-area-p1" class="vs-half vs-p1" onmousedown="vsClick(1, event)" ontouchstart="vsClick(1, event)">
-            <p class="vs-label">PLAYER 1</p>
+            <p id="vs-label-p1" class="vs-label">PLAYER 1</p>
             <p id="vs-score-p1" class="vs-score">0</p>
         </div>
         <div id="vs-area-p2" class="vs-half vs-p2" onmousedown="vsClick(2, event)" ontouchstart="vsClick(2, event)">
-            <p class="vs-label">PLAYER 2</p>
+            <p id="vs-label-p2" class="vs-label">PLAYER 2</p>
             <p id="vs-score-p2" class="vs-score">0</p>
         </div>
     </div>
@@ -237,7 +304,6 @@
         <div class="modal-content">
             <h2 id="lb-title">Top 10: 5.0s</h2>
             
-            <!-- Tab Navigation -->
             <div class="lb-tabs">
                 <div id="tab-local" class="lb-tab active" onclick="switchLBTab('local')">Local</div>
                 <div id="tab-world" class="lb-tab" onclick="switchLBTab('world')">World 🌍</div>
@@ -425,21 +491,11 @@
                 });
                 content.innerHTML = html;
             } else {
-                // Simulated Backend Fetch for World Leaderboard
-                content.innerHTML = `<p style='color: var(--accent-main); margin-top: 40px;'>Loading Database...</p>`;
-                setTimeout(() => {
-                    // MOCK DATA: To connect a real backend, replace this setTimeout block with a fetch() call to Firebase/Supabase!
-                    let mockWorldData = [
-                        { name: "Faker", cps: 15.2 }, { name: "Guest_992", cps: 14.8 }, { name: "NinjaTapper", cps: 13.9 },
-                        { name: "MobilePro", cps: 12.5 }, { name: "User821", cps: 11.2 }
-                    ];
-                    let html = `<p style="font-size: 12px; color: #888;">(Live Global DB Connection Required for Real Sync)</p>`;
-                    mockWorldData.forEach((s, i) => {
-                        let color = i === 0 ? "#FF9800" : (document.body.classList.contains('light-mode') ? "black" : "white"); 
-                        html += `<div class="leaderboard-row" style="color: ${color}"><span>#${i+1} ${s.name}</span><span>${s.cps.toFixed(2)} CPS</span></div>`; 
-                    });
-                    content.innerHTML = html;
-                }, 800);
+                // Showing explicit empty state until real database is wired up!
+                content.innerHTML = `
+                    <p style='color: var(--text-muted); margin-top: 40px;'>Global Leaderboard is empty.</p>
+                    <p style='font-size: 14px; color: var(--accent-main);'>No active database connected to save online scores.</p>
+                `;
             }
         }
 
@@ -456,28 +512,170 @@
         }
 
         // --- MINIGAME HUB LOGIC ---
+        let activeMinigameInterval = null;
+        let activeMinigameTimeout = null;
+
         function openMinigameHub() {
             document.getElementById('mg-menu-screen').style.display = "block";
             document.getElementById('mg-versus-screen').style.display = "none";
+            document.getElementById('mg-target-screen').style.display = "none";
+            document.getElementById('mg-react-screen').style.display = "none";
+            document.getElementById('mg-sprint-screen').style.display = "none";
+            document.getElementById('mg-grid-screen').style.display = "none";
             showModal('minigame-modal');
         }
         function closeMinigames() { backToHub(); hideModals(); }
         function backToHub() {
+            clearInterval(activeMinigameInterval); clearTimeout(activeMinigameTimeout);
             document.getElementById('mg-versus-screen').style.display = "none";
+            document.getElementById('mg-target-screen').style.display = "none";
+            document.getElementById('mg-react-screen').style.display = "none";
+            document.getElementById('mg-sprint-screen').style.display = "none";
+            document.getElementById('mg-grid-screen').style.display = "none";
             document.getElementById('mg-menu-screen').style.display = "block";
         }
         function showGame(gameId) {
             document.getElementById('mg-menu-screen').style.display = "none";
             document.getElementById(`mg-${gameId}-screen`).style.display = "block";
+            
+            if(gameId === 'react') resetReactGame();
+            if(gameId === 'sprint') resetSprint();
+            if(gameId === 'target') {
+                document.getElementById('tg-start-btn').style.display = "block";
+                document.getElementById('mg-target').style.display = "none";
+                document.getElementById('tg-final').style.display = "none";
+                document.getElementById('tg-timer-label').innerText = "Time: 10.0s";
+                document.getElementById('tg-score-label').innerText = "Hits: 0";
+            }
+            if(gameId === 'grid') {
+                document.getElementById('gr-start-btn').style.display = "block";
+                document.getElementById('gr-final').style.display = "none";
+                document.getElementById('gr-timer-label').innerText = "Time: 10.0s";
+                document.getElementById('gr-score-label').innerText = "Score: 0";
+                generateGrid();
+            }
+        }
+
+        // --- 1-PLAYER MINIGAME LOGIC (RESTORED) ---
+        
+        // Target Practice
+        let tgTimeLeft = 10.0; let tgHits = 0; let tgRunning = false;
+        function startTargetGame() {
+            tgTimeLeft = 10.0; tgHits = 0; tgRunning = true;
+            document.getElementById('tg-start-btn').style.display = "none"; document.getElementById('tg-final').style.display = "none";
+            document.getElementById('tg-timer-label').innerText = "Time: 10.0s"; document.getElementById('tg-score-label').innerText = "Hits: 0";
+            document.getElementById('mg-target').style.display = "block"; moveTarget();
+            activeMinigameInterval = setInterval(() => {
+                tgTimeLeft -= 0.05;
+                if (tgTimeLeft <= 0) {
+                    tgTimeLeft = 0; tgRunning = false; clearInterval(activeMinigameInterval);
+                    document.getElementById('mg-target').style.display = "none";
+                    document.getElementById('tg-start-btn').style.display = "block"; document.getElementById('tg-start-btn').innerText = "PLAY AGAIN";
+                    document.getElementById('tg-final').innerText = `Final Score: ${tgHits} Hits!`; document.getElementById('tg-final').style.display = "block";
+                }
+                document.getElementById('tg-timer-label').innerText = `Time: ${tgTimeLeft.toFixed(1)}s`;
+            }, 50);
+        }
+        function moveTarget() {
+            const target = document.getElementById('mg-target'); const area = document.getElementById('mg-target-area');
+            const maxX = area.clientWidth - 50; const maxY = area.clientHeight - 50;
+            target.style.left = `${Math.floor(Math.random() * maxX)}px`; target.style.top = `${Math.floor(Math.random() * maxY)}px`;
+        }
+        function hitTarget(e) {
+            if (e.type === 'touchstart') e.preventDefault(); if (!tgRunning) return;
+            tgHits++; document.getElementById('tg-score-label').innerText = `Hits: ${tgHits}`; moveTarget();
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+
+        // Reaction Time
+        let reactState = 'idle'; let reactStartTime = 0;
+        function resetReactGame() {
+            reactState = 'idle'; clearTimeout(activeMinigameTimeout);
+            let reactArea = document.getElementById('mg-react-area');
+            reactArea.style.backgroundColor = '#555'; reactArea.innerText = 'Click to Start';
+        }
+        function handleReactClick(e) {
+            if (e.type === 'touchstart') e.preventDefault();
+            let reactArea = document.getElementById('mg-react-area');
+            if (reactState === 'idle') {
+                reactState = 'waiting'; reactArea.style.backgroundColor = '#E53935'; reactArea.innerText = 'Wait for green...';
+                activeMinigameTimeout = setTimeout(() => {
+                    reactState = 'green'; reactArea.style.backgroundColor = '#4CAF50'; reactArea.innerText = 'CLICK!';
+                    reactStartTime = performance.now();
+                }, Math.random() * 3000 + 2000);
+            } else if (reactState === 'waiting') {
+                clearTimeout(activeMinigameTimeout); reactState = 'idle';
+                reactArea.style.backgroundColor = '#333'; reactArea.innerText = 'Too early! Click to try again.';
+            } else if (reactState === 'green') {
+                let reactionTime = performance.now() - reactStartTime; reactState = 'idle';
+                reactArea.style.backgroundColor = 'var(--accent-main)'; reactArea.innerText = `${reactionTime.toFixed(0)} ms! Click to go again.`;
+                if (navigator.vibrate) navigator.vibrate(10);
+            }
+        }
+
+        // 100-Click Sprint
+        let spClicks = 0; let spTime = 0; let spRunning = false;
+        function resetSprint() {
+            spClicks = 0; spTime = 0; spRunning = false; clearInterval(activeMinigameInterval);
+            document.getElementById('sp-timer-label').innerText = "Time: 0.00s"; document.getElementById('sp-score-label').innerText = "0 / 100";
+            document.getElementById('mg-sprint-btn').innerText = "START"; document.getElementById('mg-sprint-btn').style.display = "block";
+            document.getElementById('sp-final').style.display = "none"; document.getElementById('sp-reset-btn').style.display = "none";
+        }
+        function handleSprintClick(e) {
+            if (e.type === 'touchstart') e.preventDefault(); if (navigator.vibrate) navigator.vibrate(10);
+            if (!spRunning && spClicks === 0) {
+                spRunning = true;
+                activeMinigameInterval = setInterval(() => { spTime += 0.05; document.getElementById('sp-timer-label').innerText = `Time: ${spTime.toFixed(2)}s`; }, 50);
+            }
+            if (spRunning) {
+                spClicks++; document.getElementById('sp-score-label').innerText = `${spClicks} / 100`; document.getElementById('mg-sprint-btn').innerText = spClicks;
+                if (spClicks >= 100) {
+                    spRunning = false; clearInterval(activeMinigameInterval); document.getElementById('mg-sprint-btn').style.display = "none";
+                    document.getElementById('sp-final').innerText = `Final Time: ${spTime.toFixed(2)}s!`; document.getElementById('sp-final').style.display = "block"; document.getElementById('sp-reset-btn').style.display = "block";
+                }
+            }
+        }
+
+        // Grid Mode
+        let grScore = 0; let grTimeLeft = 10.0; let grRunning = false; let grActiveIndex = -1;
+        function generateGrid() {
+            const gridArea = document.getElementById('mg-grid-area'); gridArea.innerHTML = "";
+            for(let i=0; i<9; i++) {
+                let cell = document.createElement('div'); cell.className = "grid-cell"; cell.id = `gr-cell-${i}`;
+                cell.onmousedown = (e) => handleGridClick(e, i); cell.ontouchstart = (e) => handleGridClick(e, i);
+                gridArea.appendChild(cell);
+            }
+        }
+        function startGridGame() {
+            grScore = 0; grTimeLeft = 10.0; grRunning = true;
+            document.getElementById('gr-start-btn').style.display = "none"; document.getElementById('gr-final').style.display = "none";
+            document.getElementById('gr-timer-label').innerText = "Time: 10.0s"; document.getElementById('gr-score-label').innerText = "Score: 0";
+            lightRandomCell();
+            activeMinigameInterval = setInterval(() => {
+                grTimeLeft -= 0.1;
+                if (grTimeLeft <= 0) {
+                    grTimeLeft = 0; grRunning = false; clearInterval(activeMinigameInterval);
+                    if(grActiveIndex !== -1) document.getElementById(`gr-cell-${grActiveIndex}`).classList.remove('active');
+                    document.getElementById('gr-start-btn').style.display = "block"; document.getElementById('gr-start-btn').innerText = "PLAY AGAIN";
+                    document.getElementById('gr-final').innerText = `Final Score: ${grScore}!`; document.getElementById('gr-final').style.display = "block";
+                }
+                document.getElementById('gr-timer-label').innerText = `Time: ${grTimeLeft.toFixed(1)}s`;
+            }, 100);
+        }
+        function lightRandomCell() {
+            if(grActiveIndex !== -1) document.getElementById(`gr-cell-${grActiveIndex}`).classList.remove('active');
+            let newIndex = Math.floor(Math.random() * 9); while(newIndex === grActiveIndex) newIndex = Math.floor(Math.random() * 9);
+            grActiveIndex = newIndex; document.getElementById(`gr-cell-${grActiveIndex}`).classList.add('active');
+        }
+        function handleGridClick(e, index) {
+            if (e.type === 'touchstart') e.preventDefault(); if (!grRunning) return;
+            if (index === grActiveIndex) { grScore++; document.getElementById('gr-score-label').innerText = `Score: ${grScore}`; if (navigator.vibrate) navigator.vibrate(10); lightRandomCell(); }
         }
 
         // --- 2-PLAYER VERSUS MODE LOGIC ---
         let vsMode = 'classic'; // 'classic' or 'tug'
-        let vsActive = false;
-        let vsCountdown = 3;
-        let vsTime = 10;
-        let p1Score = 0; let p2Score = 0;
-        let tugScore = 50; // 50% middle
+        let vsActive = false; let vsCountdown = 3; let vsTime = 10;
+        let p1Score = 0; let p2Score = 0; let tugScore = 50; // 50% = middle of the rope
         let vsInterval;
 
         function startVersus(mode) {
@@ -486,17 +684,22 @@
             document.getElementById('vs-timer').innerText = "READY";
             
             p1Score = 0; p2Score = 0; tugScore = 50;
-            document.getElementById('vs-score-p1').innerText = "0"; document.getElementById('vs-score-p2').innerText = "0";
+            document.getElementById('vs-score-p1').innerText = "0"; 
+            document.getElementById('vs-score-p2').innerText = "0";
             
             if (mode === 'tug') {
-                document.getElementById('vs-tug-layer').style.display = "flex";
-                document.getElementById('tug-red-fill').style.height = "50%";
+                document.getElementById('vs-rope-container').style.display = "block";
+                document.getElementById('vs-knot').style.top = "50%";
                 document.getElementById('vs-score-p1').style.display = "none";
                 document.getElementById('vs-score-p2').style.display = "none";
+                document.getElementById('vs-label-p1').innerText = "PULL! (TAP)";
+                document.getElementById('vs-label-p2').innerText = "PULL! (TAP)";
             } else {
-                document.getElementById('vs-tug-layer').style.display = "none";
+                document.getElementById('vs-rope-container').style.display = "none";
                 document.getElementById('vs-score-p1').style.display = "block";
                 document.getElementById('vs-score-p2').style.display = "block";
+                document.getElementById('vs-label-p1').innerText = "PLAYER 1";
+                document.getElementById('vs-label-p2').innerText = "PLAYER 2";
             }
             
             vsCountdown = 3; vsActive = false;
@@ -534,15 +737,17 @@
                 if (player === 1) { p1Score++; document.getElementById('vs-score-p1').innerText = p1Score; }
                 else { p2Score++; document.getElementById('vs-score-p2').innerText = p2Score; }
             } else if (vsMode === 'tug') {
-                // Tug of War: P1 (Top/Red) pushes down (increases red height), P2 pushes up
-                if (player === 1) tugScore += 2;
-                else tugScore -= 2;
+                // P1 (top) taps pull the knot UP (towards 0%)
+                // P2 (bottom) taps pull the knot DOWN (towards 100%)
+                if (player === 1) tugScore -= 1.5;
+                else tugScore += 1.5;
                 
-                document.getElementById('tug-red-fill').style.height = `${tugScore}%`;
+                document.getElementById('vs-knot').style.top = `${tugScore}%`;
                 
-                if (tugScore >= 100) {
+                // If knot hits 15% (P1's red zone) or 85% (P2's blue zone)
+                if (tugScore <= 15) {
                     vsActive = false; document.getElementById('vs-timer').innerText = "P1 WINS!";
-                } else if (tugScore <= 0) {
+                } else if (tugScore >= 85) {
                     vsActive = false; document.getElementById('vs-timer').innerText = "P2 WINS!";
                 }
             }
