@@ -44,6 +44,10 @@
         .modal { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); flex-direction: column; align-items: center; justify-content: center; z-index: 50; }
         .modal-content { background: var(--panel-bg); padding: 30px; border-radius: 15px; width: 85%; max-width: 400px; text-align: center; max-height: 85vh; overflow-y: auto; box-shadow: 0 15px 30px rgba(0,0,0,0.5);}
         .modal h2 { margin-top: 0; color: var(--accent-main); }
+        
+        /* Fullscreen Setting for Arcade */
+        .fullscreen-mode { width: 100% !important; max-width: 100% !important; height: 100% !important; max-height: 100% !important; border-radius: 0 !important; padding: 20px 15px !important; box-sizing: border-box; }
+
         .mg-menu-btn { background-color: #333; color: white; border: 2px solid #555; padding: 15px; margin: 5px 0; width: 100%; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
         body.light-mode .mg-menu-btn { background-color: #eee; border-color: #ccc; color: #121212; }
         .mg-menu-btn:hover { border-color: var(--accent-main); transform: scale(1.02); }
@@ -132,25 +136,26 @@
 
     <!-- MINIGAME HUB MODAL -->
     <div class="modal" id="minigame-modal">
-        <div class="modal-content" style="width: 90%; max-width: 500px; padding: 20px;">
+        <div id="mg-modal-content" class="modal-content" style="width: 90%; max-width: 500px; padding: 20px;">
             <!-- MENU -->
             <div id="mg-menu-screen" class="game-screen" style="display:block;">
                 <div class="mg-header"><h2 style="margin: 0;">Arcade</h2><button class="btn-small danger-btn" style="width: auto;" onclick="closeMinigames()">Close</button></div>
                 <div style="max-height: 60vh; overflow-y: auto; padding-right: 5px;">
-                    <button class="mg-menu-btn" style="border-color: #E91E63;" onclick="showGame('versus')">👯 2 Player (Versus)</button>
+                    <!-- Only Versus gets the border -->
+                    <button class="mg-menu-btn" style="border-color: #E91E63;" onclick="showGame('versus')">👯 Versus (2 Player)</button>
                     <button class="mg-menu-btn" onclick="showGame('target')">🎯 Target Practice</button>
                     <button class="mg-menu-btn" onclick="showGame('react')">⚡ Reaction Time</button>
                     <button class="mg-menu-btn" onclick="showGame('sprint')">🏁 100-Click Sprint</button>
                     <button class="mg-menu-btn" onclick="showGame('grid')">🔲 Grid Mode</button>
-                    <button class="mg-menu-btn" style="border-color: #4CAF50;" onclick="showGame('minefield')">💣 Minefield</button>
-                    <button class="mg-menu-btn" style="border-color: #FF9800;" onclick="showGame('juggler')">🤹 Keep It Up</button>
-                    <button class="mg-menu-btn" style="border-color: #9C27B0;" onclick="showGame('simon')">🧠 Simon Says</button>
+                    <button class="mg-menu-btn" onclick="showGame('minefield')">💣 Minefield</button>
+                    <button class="mg-menu-btn" onclick="showGame('juggler')">🤹 Keep It Up</button>
+                    <button class="mg-menu-btn" onclick="showGame('simon')">🧠 Simon Says</button>
                 </div>
             </div>
 
             <!-- VERSUS MENU -->
             <div id="mg-versus-screen" class="game-screen">
-                <div class="mg-header"><h2 style="margin: 0;">2 Player Mode</h2><button class="mg-back-btn" onclick="backToHub()">Back</button></div>
+                <div class="mg-header"><h2 style="margin: 0;">Versus Mode</h2><button class="mg-back-btn" onclick="backToHub()">Back</button></div>
                 <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Place your phone flat on a table between you and a friend.</p>
                 <button class="action-btn accent-btn" onclick="startVersus('classic')">⚔️ Classic Mode (10s)</button>
                 <button class="action-btn theme-btn" onclick="startVersus('tug')">🧵 Rope Tug of War</button>
@@ -256,6 +261,7 @@
         <div class="modal-content">
             <h2>Settings</h2>
             <button id="sound-btn" class="action-btn success-btn" onclick="toggleSound()">🔊 Sound: ON</button>
+            <button id="fullscreen-btn" class="action-btn theme-btn" onclick="toggleArcadeFullscreen()">🔲 Fullscreen Arcade: OFF</button>
             <button class="action-btn theme-btn" onclick="toggleTheme()">🌗 Toggle Dark Mode</button>
             <p style="margin-top: 20px;">Theme Color</p>
             <div class="color-grid" id="color-grid"></div>
@@ -309,7 +315,18 @@
             }
         }
 
-        // --- VISUAL JUICE ENGINE (Shake & Confetti only) ---
+        // --- FULLSCREEN ARCADE TOGGLE ---
+        let arcadeFS = localStorage.getItem('cps_fs') === 'true';
+        if(arcadeFS) { document.getElementById('fullscreen-btn').innerText = "🔲 Fullscreen Arcade: ON"; document.getElementById('fullscreen-btn').classList.replace('theme-btn', 'success-btn'); }
+        function toggleArcadeFullscreen() { 
+            arcadeFS = !arcadeFS; localStorage.setItem('cps_fs', arcadeFS); 
+            document.getElementById('fullscreen-btn').innerText = arcadeFS ? "🔲 Fullscreen Arcade: ON" : "🔲 Fullscreen Arcade: OFF"; 
+            if(arcadeFS) { document.getElementById('fullscreen-btn').classList.replace('theme-btn', 'success-btn'); }
+            else { document.getElementById('fullscreen-btn').classList.replace('success-btn', 'theme-btn'); }
+            playSound('click'); 
+        }
+
+        // --- VISUAL JUICE ENGINE ---
         function triggerShake() { document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 400); }
         function spawnConfetti() {
             const cols = ['#E91E63', '#2196F3', '#4CAF50', '#FF9800', '#FFEB3B'];
@@ -340,7 +357,8 @@
         function updateCustomTime() { let val = parseFloat(document.getElementById("custom-time").value); if (isNaN(val) || val <= 0) val = 5.0; setTime(val); }
         function updatePBDisplay() { let scores = highScores[currentCategory] || []; let topCps = scores.length > 0 ? scores[0].cps : 0.00; let catName = currentCategory === "custom" ? "Custom" : `${currentCategory}s`; document.getElementById("pb-label").innerText = `Personal Best (${catName}): ${topCps.toFixed(2)} CPS`; }
         function togglePause() { if (!isRunning || isFinished) return; isPaused = !isPaused; let btn = document.getElementById("click-btn"); let pBtn = document.getElementById("pause-btn"); if (isPaused) { pBtn.innerText = "▶ Resume"; btn.innerText = "PAUSED"; btn.style.backgroundColor = "#555"; playSound('bloop');} else { pBtn.innerText = "⏸ Pause"; btn.innerText = clicks; btn.style.backgroundColor = "var(--accent-flash)"; playSound('click');} }
-        
+        function autoPauseCheck() { if (isRunning && !isPaused && !isFinished) { togglePause(); } }
+
         const clickBtn = document.getElementById("click-btn");
         clickBtn.addEventListener('mousedown', (e) => { if (e.button === 0) handleTap(e); });
         clickBtn.addEventListener('touchstart', (e) => { e.preventDefault(); for (let i = 0; i < e.changedTouches.length; i++) handleTap(e); }, { passive: false });
@@ -381,23 +399,89 @@
             for (let i = 0; i < n; i++) { let x = (i/(n-1))*cvs.width; let y = cvs.height - ((arr[i]/mx)*(cvs.height-20)) - 10; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2); ctx.fill(); }
         }
         function resetGame() { playSound('click'); hideModals(); isFinished = false; isPaused = false; clicks = 0; timeLeft = duration; document.getElementById("timer").innerText = `Time left: ${timeLeft.toFixed(1)}s`; document.getElementById("score-label").innerText = "Clicks: 0"; document.getElementById("cps-label").innerText = "CPS: 0.00"; clickBtn.innerText = "START"; clickBtn.style.backgroundColor = "var(--accent-main)"; document.getElementById("pause-btn").style.display = "none"; document.getElementById("pause-btn").innerText = "⏸ Pause"; updatePBDisplay(); }
-        function showLeaderboard() { playSound('click'); let catName = currentCategory === "custom" ? "Custom" : `${currentCategory}s`; document.getElementById("lb-title").innerText = `Top 10: ${catName}`; const content = document.getElementById("lb-content"); let scores = highScores[currentCategory] || []; let html = ""; if (scores.length === 0) html = "<p style='color: var(--text-muted)'>No scores yet!</p>"; else scores.forEach((s, i) => { let color = i === 0 ? "#FF9800" : (document.body.classList.contains('light-mode') ? "black" : "white"); html += `<div class="leaderboard-row" style="color: ${color}"><span>#${i+1}</span><span>${s.cps.toFixed(2)} CPS</span><span style="color: var(--text-muted); font-size: 12px; margin-top: 3px;">(${s.clicks})</span></div>`; }); content.innerHTML = html; showModal('leaderboard-modal'); }
+        
+        function showLeaderboard() { 
+            autoPauseCheck(); playSound('click'); 
+            let catName = currentCategory === "custom" ? "Custom" : `${currentCategory}s`; 
+            document.getElementById("lb-title").innerText = `Top 10: ${catName}`; 
+            const content = document.getElementById("lb-content"); 
+            let scores = highScores[currentCategory] || []; let html = ""; 
+            if (scores.length === 0) html = "<p style='color: var(--text-muted)'>No scores yet!</p>"; 
+            else scores.forEach((s, i) => { let color = i === 0 ? "#FF9800" : (document.body.classList.contains('light-mode') ? "black" : "white"); html += `<div class="leaderboard-row" style="color: ${color}"><span>#${i+1}</span><span>${s.cps.toFixed(2)} CPS</span><span style="color: var(--text-muted); font-size: 12px; margin-top: 3px;">(${s.clicks})</span></div>`; }); 
+            content.innerHTML = html; showModal('leaderboard-modal'); 
+        }
+        
         function wipeLeaderboard() { if(confirm("Are you sure?")) { highScores = { "1.0": [], "3.0": [], "5.0": [], "10.0": [], "60.0": [], "custom": [] }; localStorage.setItem('cps_highscores', JSON.stringify(highScores)); updatePBDisplay(); hideModals(); playSound('boom'); triggerShake();} }
         function copyResults() { playSound('click'); let finalCPS = (clicks / duration).toFixed(2); let catName = currentCategory === "custom" ? "Custom" : `${currentCategory}s`; navigator.clipboard.writeText(`🎮 CPS Tester: ${finalCPS} CPS (${clicks} clicks in ${catName})!`); alert("Copied to clipboard!"); }
 
         // --- MINIGAME ENGINE ---
         let activeMinigameInterval = null; let activeMinigameTimeout = null; let smTimeouts = [];
-        function openMinigameHub() { playSound('click'); showGame('menu'); showModal('minigame-modal'); }
+        
+        function openMinigameHub() { 
+            autoPauseCheck(); playSound('click'); 
+            let mgContent = document.getElementById('mg-modal-content');
+            if (arcadeFS) mgContent.classList.add('fullscreen-mode');
+            else mgContent.classList.remove('fullscreen-mode');
+            showGame('menu'); showModal('minigame-modal'); 
+        }
+        
         function closeMinigames() { playSound('click'); backToHub(); hideModals(); }
         function backToHub() { playSound('click'); clearInterval(activeMinigameInterval); clearTimeout(activeMinigameTimeout); smTimeouts.forEach(t=>clearTimeout(t)); showGame('menu'); }
         function showGame(gameId) { playSound('click'); document.querySelectorAll('.game-screen').forEach(el => el.style.display = 'none'); document.getElementById(`mg-${gameId}-screen`).style.display = "block"; setupGameUI(gameId); }
+        
         function setupGameUI(g) {
-            if(g === 'react') resetReactGame(); if(g === 'sprint') resetSprint();
-            if(g === 'target') { document.getElementById('tg-start-btn').style.display = "block"; document.getElementById('mg-target').style.display = "none"; document.getElementById('tg-final').style.display = "none"; document.getElementById('tg-timer-label').innerText = "Time: 10.0s"; document.getElementById('tg-score-label').innerText = "Hits: 0"; }
-            if(g === 'grid') { document.getElementById('gr-start-btn').style.display = "block"; document.getElementById('gr-final').style.display = "none"; document.getElementById('gr-timer-label').innerText = "Time: 10.0s"; document.getElementById('gr-score-label').innerText = "Score: 0"; document.getElementById('mg-grid-area').innerHTML = ""; }
-            if(g === 'minefield') { document.getElementById('mf-start-btn').style.display = "block"; document.getElementById('mf-area').innerHTML='<button id="mf-start-btn" class="action-btn success-btn" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60%;z-index:10;" onclick="startMinefield()">START</button>'; document.getElementById('mf-final').style.display = "none"; document.getElementById('mf-timer-label').innerText = "Time: 10.0s"; document.getElementById('mf-score-label').innerText = "Score: 0"; }
-            if(g === 'juggler') { document.getElementById('jg-start-btn').style.display = "block"; document.getElementById('jg-ball').style.display="none"; document.getElementById('jg-final').style.display = "none"; document.getElementById('jg-score-label').innerText = "Juggles: 0"; }
-            if(g === 'simon') { document.getElementById('sm-start-btn').style.display = "block"; document.getElementById('sm-final').style.display = "none"; document.getElementById('sm-status').innerText = "Memory Test"; document.getElementById('sm-score-label').innerText = "Level: 1"; document.getElementById('sm-grid-area').innerHTML = ""; }
+            if(g === 'react') resetReactGame(); 
+            if(g === 'sprint') resetSprint();
+            
+            // Render PREVIEW states for all games so players know what to expect
+            if(g === 'target') { 
+                document.getElementById('tg-start-btn').style.display = "block";
+                document.getElementById('tg-start-btn').innerText = "START";
+                let tg = document.getElementById('mg-target');
+                tg.style.display = "block"; tg.style.left = "40%"; tg.style.top = "15%"; 
+                document.getElementById('tg-final').style.display = "none"; 
+                document.getElementById('tg-timer-label').innerText = "Time: 10.0s"; 
+                document.getElementById('tg-score-label').innerText = "Hits: 0"; 
+            }
+            if(g === 'grid') { 
+                document.getElementById('gr-start-btn').style.display = "block"; 
+                document.getElementById('gr-start-btn').innerText = "START GAME"; 
+                document.getElementById('gr-final').style.display = "none"; 
+                document.getElementById('gr-timer-label').innerText = "Time: 10.0s"; 
+                document.getElementById('gr-score-label').innerText = "Score: 0"; 
+                const area = document.getElementById('mg-grid-area'); 
+                area.innerHTML=""; 
+                for(let i=0;i<9;i++){ let c=document.createElement('div'); c.className="grid-cell"; c.id=`gr-${i}`; area.appendChild(c); }
+            }
+            if(g === 'minefield') { 
+                document.getElementById('mf-start-btn').style.display = "block"; 
+                document.getElementById('mf-start-btn').innerText = "START";
+                document.getElementById('mf-final').style.display = "none"; 
+                document.getElementById('mf-timer-label').innerText = "Time: 10.0s"; 
+                document.getElementById('mf-score-label').innerText = "Score: 0"; 
+                const area = document.getElementById('mf-area');
+                area.querySelectorAll('.mf-targ, .mf-bomb').forEach(e=>e.remove());
+                let gT=document.createElement('div'); gT.className='mf-targ'; gT.style.left='20%'; gT.style.top='20%'; area.appendChild(gT);
+                let rB=document.createElement('div'); rB.className='mf-bomb'; rB.style.left='65%'; rB.style.top='20%'; area.appendChild(rB);
+            }
+            if(g === 'juggler') { 
+                document.getElementById('jg-start-btn').style.display = "block"; 
+                document.getElementById('jg-start-btn').innerText = "START";
+                let ball = document.getElementById('jg-ball');
+                ball.style.display="block"; ball.style.top = "15%";
+                document.getElementById('jg-final').style.display = "none"; 
+                document.getElementById('jg-score-label').innerText = "Juggles: 0"; 
+            }
+            if(g === 'simon') { 
+                document.getElementById('sm-start-btn').style.display = "block"; 
+                document.getElementById('sm-start-btn').innerText = "START GAME";
+                document.getElementById('sm-final').style.display = "none"; 
+                document.getElementById('sm-status').innerText = "Memory Test"; 
+                document.getElementById('sm-score-label').innerText = "Level: 1"; 
+                const area = document.getElementById('sm-grid-area'); 
+                area.innerHTML=""; 
+                for(let i=0;i<9;i++){ let c=document.createElement('div'); c.className="grid-cell sm-cell"; c.id=`sm-${i}`; area.appendChild(c); }
+            }
         }
 
         // 1. TARGET PRACTICE
@@ -425,10 +509,10 @@
         // 5. MINEFIELD
         let mfTime = 10.0, mfScore = 0, mfRun = false;
         function startMinefield() { playSound('bloop'); mfTime = 10.0; mfScore = 0; mfRun = true; document.getElementById('mf-start-btn').style.display = "none"; document.getElementById('mf-final').style.display = "none"; document.getElementById('mf-timer-label').innerText = "Time: 10.0s"; document.getElementById('mf-score-label').innerText = "Score: 0"; spawnMf(); activeMinigameInterval = setInterval(()=>{ mfTime-=0.1; if(mfTime<=0){ mfTime=0; endMf(`Time's Up! Score: ${mfScore}`); } document.getElementById('mf-timer-label').innerText=`Time: ${mfTime.toFixed(1)}s`; }, 100); }
-        function spawnMf() { const area = document.getElementById('mf-area'); area.innerHTML=''; let mx = area.clientWidth-45; let my = area.clientHeight-45; let g=document.createElement('div'); g.className='mf-targ'; g.style.left=Math.random()*mx+'px'; g.style.top=Math.random()*my+'px'; g.onmousedown=tapMf; g.ontouchstart=tapMf; area.appendChild(g); let bombs = 1 + Math.floor(mfScore/5); for(let i=0;i<bombs;i++){ let b=document.createElement('div'); b.className='mf-bomb'; b.style.left=Math.random()*mx+'px'; b.style.top=Math.random()*my+'px'; b.onmousedown=dieMf; b.ontouchstart=dieMf; area.appendChild(b); } }
+        function spawnMf() { const area = document.getElementById('mf-area'); area.querySelectorAll('.mf-targ, .mf-bomb').forEach(e=>e.remove()); let mx = area.clientWidth-45; let my = area.clientHeight-45; let g=document.createElement('div'); g.className='mf-targ'; g.style.left=Math.random()*mx+'px'; g.style.top=Math.random()*my+'px'; g.onmousedown=tapMf; g.ontouchstart=tapMf; area.appendChild(g); let bombs = 1 + Math.floor(mfScore/5); for(let i=0;i<bombs;i++){ let b=document.createElement('div'); b.className='mf-bomb'; b.style.left=Math.random()*mx+'px'; b.style.top=Math.random()*my+'px'; b.onmousedown=dieMf; b.ontouchstart=dieMf; area.appendChild(b); } }
         function tapMf(e){ if(e.type==='touchstart') e.preventDefault(); if(!mfRun) return; mfScore++; document.getElementById('mf-score-label').innerText=`Score: ${mfScore}`; playSound('click'); if(navigator.vibrate) navigator.vibrate(10); spawnMf(); }
         function dieMf(e){ if(e.type==='touchstart') e.preventDefault(); if(!mfRun) return; if(navigator.vibrate) navigator.vibrate(50); triggerShake(); playSound('boom'); endMf(`💥 KABOOM! Final Score: ${mfScore}`); }
-        function endMf(msg) { mfRun = false; clearInterval(activeMinigameInterval); document.getElementById('mf-area').innerHTML=''; document.getElementById('mf-start-btn').style.display = "block"; document.getElementById('mf-start-btn').innerText = "TRY AGAIN"; document.getElementById('mf-final').innerText = msg; document.getElementById('mf-final').style.display = "block"; }
+        function endMf(msg) { mfRun = false; clearInterval(activeMinigameInterval); document.getElementById('mf-start-btn').style.display = "block"; document.getElementById('mf-start-btn').innerText = "TRY AGAIN"; document.getElementById('mf-final').innerText = msg; document.getElementById('mf-final').style.display = "block"; }
 
         // 6. KEEP IT UP (JUGGLER)
         let jgScore = 0, jgRun = false, jgY = 0, jgVel = 0;
@@ -450,7 +534,10 @@
         function exitVersus() { playSound('click'); clearInterval(vsInt); vsActive = false; document.getElementById('vs-container').style.display = "none"; openMinigameHub(); }
 
         // MODAL UTILS
-        function showModal(id) { document.getElementById(id).style.display = "flex"; }
+        function showModal(id) { 
+            autoPauseCheck(); 
+            document.getElementById(id).style.display = "flex"; 
+        }
         function hideModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = "none"); }
     </script>
 </body>
