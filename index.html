@@ -3,15 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CPS Tester (Pro)</title>
+    <title>CPS Tester Pro</title>
+    
+    <!-- PWA App Links -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <meta name="theme-color" content="#1a1a1a">
+
     <style>
         :root {
             --accent-main: #2196F3;
-            --accent-hover: #1976D2;
             --accent-flash: #0A2440;
             --bg-color: #1a1a1a;
             --panel-bg: #2d2d2d;
             --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+        }
+
+        body.light-mode {
+            --bg-color: #f0f0f0;
+            --panel-bg: #ffffff;
+            --text-main: #121212;
+            --text-muted: #666666;
         }
 
         body {
@@ -26,6 +39,7 @@
             user-select: none;
             -webkit-user-select: none;
             overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* Top Bar */
@@ -45,6 +59,11 @@
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        body.light-mode .btn-small {
+            background-color: #ddd;
+            color: #121212;
         }
 
         /* Main Game Area */
@@ -74,6 +93,11 @@
             cursor: pointer;
         }
 
+        body.light-mode .preset-btn {
+            background-color: #ddd;
+            color: #121212;
+        }
+
         #custom-time {
             width: 50px;
             padding: 8px;
@@ -85,6 +109,12 @@
             font-weight: bold;
         }
 
+        body.light-mode #custom-time {
+            background: #eee;
+            color: #121212;
+            border-color: #ccc;
+        }
+
         #pb-label {
             color: var(--accent-main);
             font-weight: bold;
@@ -93,7 +123,7 @@
 
         #click-btn {
             width: 85%;
-            height: 40vh;
+            height: 35vh;
             background-color: var(--accent-main);
             color: white;
             font-size: 42px;
@@ -104,6 +134,14 @@
             touch-action: none;
             -webkit-tap-highlight-color: transparent;
             transition: background-color 0.1s;
+        }
+
+        #pause-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 8px;
+            display: none;
         }
 
         .stats {
@@ -121,7 +159,7 @@
             display: none;
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.8);
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -135,6 +173,8 @@
             width: 85%;
             max-width: 400px;
             text-align: center;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal h2 { margin-top: 0; color: var(--accent-main); }
@@ -166,14 +206,18 @@
         .leaderboard-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px;
+            padding: 8px;
             border-bottom: 1px solid #444;
             font-weight: bold;
         }
 
+        body.light-mode .leaderboard-row { border-color: #ddd; }
+
         .danger-btn { background-color: #E53935; }
         .success-btn { background-color: #4CAF50; }
-        .action-btn { background-color: var(--accent-main); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 18px; margin: 5px; width: 100%; cursor: pointer;}
+        .theme-btn { background-color: #555; }
+        .action-btn { color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 16px; margin: 5px; width: 100%; cursor: pointer;}
+        .accent-btn { background-color: var(--accent-main); }
     </style>
 </head>
 <body>
@@ -197,6 +241,7 @@
         <div id="pb-label">Personal Best: 0.00 CPS</div>
 
         <button id="click-btn">START</button>
+        <button id="pause-btn" class="btn-small" onclick="togglePause()">⏸ Pause</button>
 
         <div class="stats">
             <span id="score-label">Clicks: 0</span>
@@ -209,14 +254,14 @@
         <div class="modal-content">
             <h2>Test Complete!</h2>
             <h1 id="end-cps" style="margin: 10px 0;">0.00 CPS</h1>
-            <p id="end-stats" style="color: #aaa; margin: 0 0 15px 0;">Clicks: 0 | Rank: N/A</p>
+            <p id="end-stats" style="color: var(--text-muted); margin: 0 0 15px 0;">Clicks: 0 | Rank: N/A</p>
             
             <canvas id="cps-graph"></canvas>
             
             <p id="end-pb-alert" style="font-weight: bold;"></p>
             
-            <button class="action-btn" onclick="copyResults()">📋 Copy Result</button>
-            <button class="action-btn" onclick="resetGame()">🔄 Play Again</button>
+            <button class="action-btn accent-btn" onclick="copyResults()">📋 Copy Result</button>
+            <button class="action-btn accent-btn" onclick="resetGame()">🔄 Play Again</button>
         </div>
     </div>
 
@@ -224,7 +269,10 @@
     <div class="modal" id="settings-modal">
         <div class="modal-content">
             <h2>Settings</h2>
-            <p>Theme Color</p>
+            
+            <button class="action-btn theme-btn" onclick="toggleTheme()">🌗 Toggle Dark/Light Mode</button>
+            
+            <p style="margin-top: 20px;">Theme Color</p>
             <div class="color-grid" id="color-grid"></div>
             
             <hr style="border-color: #444; margin: 20px 0;">
@@ -237,7 +285,7 @@
     <!-- Leaderboard Modal -->
     <div class="modal" id="leaderboard-modal">
         <div class="modal-content">
-            <h2 id="lb-title">Top 5: 5.0s</h2>
+            <h2 id="lb-title">Top 10: 5.0s</h2>
             <div id="lb-content" style="margin-bottom: 20px;"></div>
             <button class="action-btn danger-btn" onclick="hideModals()">Close</button>
         </div>
@@ -261,12 +309,14 @@
         let clicks = 0;
         let isRunning = false;
         let isFinished = false;
+        let isPaused = false;
         let timerInterval;
         let clickTimestamps = [];
         let highScores = JSON.parse(localStorage.getItem('cps_highscores')) || { "1.0": [], "3.0": [], "5.0": [], "10.0": [], "60.0": [], "custom": [] };
 
         const root = document.documentElement;
         const clickBtn = document.getElementById("click-btn");
+        const pauseBtn = document.getElementById("pause-btn");
         const timeLabel = document.getElementById("timer");
         const scoreLabel = document.getElementById("score-label");
         const cpsLabel = document.getElementById("cps-label");
@@ -274,8 +324,20 @@
         const customTimeInput = document.getElementById("custom-time");
 
         // Initialization
+        setupTheme();
         setupColors();
         updatePBDisplay();
+
+        function setupTheme() {
+            if (localStorage.getItem('cps_theme') === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('cps_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
 
         function setupColors() {
             const grid = document.getElementById("color-grid");
@@ -319,6 +381,21 @@
             pbLabel.innerText = `Personal Best (${catName}): ${topCps.toFixed(2)} CPS`;
         }
 
+        function togglePause() {
+            if (!isRunning || isFinished) return;
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                pauseBtn.innerText = "▶ Resume";
+                clickBtn.innerText = "PAUSED";
+                clickBtn.style.backgroundColor = "#555";
+            } else {
+                pauseBtn.innerText = "⏸ Pause";
+                clickBtn.innerText = "CLICK FAST!";
+                clickBtn.style.backgroundColor = "var(--accent-flash)";
+            }
+        }
+
         // Gameplay Logic
         clickBtn.addEventListener('mousedown', (e) => { if (e.button === 0) handleTap(); });
         clickBtn.addEventListener('touchstart', (e) => {
@@ -327,8 +404,7 @@
         }, { passive: false });
 
         function handleTap() {
-            if (isFinished) return;
-            const now = Date.now();
+            if (isFinished || isPaused) return;
 
             if (!isRunning) {
                 isRunning = true;
@@ -336,6 +412,7 @@
                 clickTimestamps = [0];
                 clickBtn.innerText = "CLICK FAST!";
                 clickBtn.style.backgroundColor = "var(--accent-flash)";
+                pauseBtn.style.display = "block";
                 timerInterval = setInterval(updateTimer, 50);
             } else {
                 clicks++;
@@ -350,6 +427,8 @@
         }
 
         function updateTimer() {
+            if (isPaused) return;
+            
             timeLeft -= 0.05;
             if (timeLeft <= 0) {
                 timeLeft = 0;
@@ -362,19 +441,19 @@
             clearInterval(timerInterval);
             isRunning = false;
             isFinished = true;
+            isPaused = false;
+            pauseBtn.style.display = "none";
             
             let finalCPS = clicks / duration;
             let rank = finalCPS < 5 ? "🐢 Turtle" : finalCPS < 8 ? "🚶 Walker" : finalCPS < 12 ? "🏃 Sprinter" : "⚡ Lightning";
             
-            // Leaderboard Logic
             let scores = highScores[currentCategory] || [];
             let isPB = scores.length === 0 || finalCPS > scores[0].cps;
             scores.push({cps: finalCPS, clicks: clicks});
             scores.sort((a, b) => b.cps - a.cps);
-            highScores[currentCategory] = scores.slice(0, 5);
+            highScores[currentCategory] = scores.slice(0, 10);
             localStorage.setItem('cps_highscores', JSON.stringify(highScores));
             
-            // UI Updates
             document.getElementById("end-cps").innerText = `${finalCPS.toFixed(2)} CPS`;
             document.getElementById("end-stats").innerText = `Total Clicks: ${clicks} | Rank: ${rank}`;
             
@@ -384,7 +463,7 @@
                 pbAlert.style.color = "#4CAF50";
             } else {
                 pbAlert.innerText = `PB: ${scores[0].cps.toFixed(2)} CPS`;
-                pbAlert.style.color = "#aaa";
+                pbAlert.style.color = "var(--text-muted)";
             }
 
             drawGraph();
@@ -394,7 +473,6 @@
         function drawGraph() {
             const canvas = document.getElementById('cps-graph');
             const ctx = canvas.getContext('2d');
-            // Responsive canvas sizing
             canvas.width = canvas.parentElement.clientWidth - 60; 
             canvas.height = 150;
 
@@ -424,8 +502,7 @@
             }
             ctx.stroke();
             
-            // Draw points
-            ctx.fillStyle = "#fff";
+            ctx.fillStyle = document.body.classList.contains('light-mode') ? "#121212" : "#fff";
             for (let i = 0; i < numBins; i++) {
                 let x = (i / (numBins - 1)) * canvas.width;
                 let y = canvas.height - ((cpsPerBin[i] / maxCPS) * (canvas.height - 20)) - 10;
@@ -438,6 +515,7 @@
         function resetGame() {
             hideModals();
             isFinished = false;
+            isPaused = false;
             clicks = 0;
             timeLeft = duration;
             timeLabel.innerText = `Time left: ${timeLeft.toFixed(1)}s`;
@@ -445,28 +523,29 @@
             cpsLabel.innerText = "CPS: 0.00";
             clickBtn.innerText = "START";
             clickBtn.style.backgroundColor = "var(--accent-main)";
+            pauseBtn.style.display = "none";
+            pauseBtn.innerText = "⏸ Pause";
             updatePBDisplay();
         }
 
-        // Modal Management
         function showModal(id) { document.getElementById(id).style.display = "flex"; }
         function hideModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = "none"); }
 
         function showLeaderboard() {
             let catName = currentCategory === "custom" ? "Custom" : `${currentCategory}s`;
-            document.getElementById("lb-title").innerText = `Top 5: ${catName}`;
+            document.getElementById("lb-title").innerText = `Top 10: ${catName}`;
             
             let scores = highScores[currentCategory] || [];
             let html = "";
             if (scores.length === 0) {
-                html = "<p style='color: gray'>No scores yet!</p>";
+                html = "<p style='color: var(--text-muted)'>No scores yet!</p>";
             } else {
                 scores.forEach((s, i) => {
-                    let color = i === 0 ? "#FF9800" : "white";
+                    let color = i === 0 ? "#FF9800" : (document.body.classList.contains('light-mode') ? "black" : "white");
                     html += `<div class="leaderboard-row" style="color: ${color}">
                                 <span>#${i+1}</span>
                                 <span>${s.cps.toFixed(2)} CPS</span>
-                                <span style="color: gray; font-size: 12px; margin-top: 3px;">(${s.clicks})</span>
+                                <span style="color: var(--text-muted); font-size: 12px; margin-top: 3px;">(${s.clicks})</span>
                              </div>`;
                 });
             }
