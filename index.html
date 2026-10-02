@@ -262,7 +262,6 @@
         let isRunning = false;
         let isFinished = false;
         let timerInterval;
-        let lastClickTime = 0;
         let clickTimestamps = [];
         let highScores = JSON.parse(localStorage.getItem('cps_highscores')) || { "1.0": [], "3.0": [], "5.0": [], "10.0": [], "60.0": [], "custom": [] };
 
@@ -330,10 +329,6 @@
         function handleTap() {
             if (isFinished) return;
             const now = Date.now();
-            
-            // 5ms Anti-cheat
-            if (now - lastClickTime < 5) return;
-            lastClickTime = now;
 
             if (!isRunning) {
                 isRunning = true;
