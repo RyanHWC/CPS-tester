@@ -36,7 +36,11 @@
         #pb-label { color: var(--accent-main); font-weight: bold; margin-bottom: 15px; text-shadow: 0 0 10px rgba(33, 150, 243, 0.3);}
         #click-btn { width: 85%; height: 35vh; background-color: var(--accent-main); color: white; font-size: 60px; font-weight: bold; border: none; border-radius: 40px; cursor: pointer; touch-action: none; -webkit-tap-highlight-color: transparent; transition: background-color 0.1s; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
         #click-btn:active { transform: scale(0.97); box-shadow: 0 5px 10px rgba(0,0,0,0.3); }
-        #pause-btn { margin-top: 15px; padding: 10px 20px; font-size: 18px; border-radius: 8px; display: none; width: auto; }
+        
+        /* Rounded Pause Buttons */
+        #pause-btn, #restart-main-btn { border-radius: 25px !important; }
+        .mg-pause-btn, .mg-restart-btn { border-radius: 20px !important; }
+
         .stats { display: flex; gap: 30px; font-size: 28px; font-weight: bold; margin-top: 20px; }
         #score-label { color: var(--accent-main); }
         
@@ -52,14 +56,20 @@
         body.light-mode .mg-menu-btn { background-color: #eee; border-color: #ccc; color: #121212; }
         .mg-menu-btn:hover { border-color: var(--accent-main); transform: scale(1.02); }
         .mg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .mg-top-stats { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; font-size: 18px; }
+        .mg-top-stats { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; font-size: 18px; align-items: center;}
         .mg-back-btn { background-color: #555; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px;}
         .game-screen { display: none; }
         
-        /* Visual Juice Animations (Shake & Confetti only) */
+        /* Visual Juice Animations */
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-15px) rotate(-3deg); } 40%, 80% { transform: translateX(15px) rotate(3deg); } }
+        @keyframes big-shake { 0%, 100% { transform: translateX(0) scale(1); } 20%, 60% { transform: translateX(-25px) rotate(-5deg) scale(1.02); } 40%, 80% { transform: translateX(25px) rotate(5deg) scale(1.02); } }
         .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        .big-shake { animation: big-shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
         .confetti { position: absolute; width: 12px; height: 12px; z-index: 60; pointer-events: none; border-radius: 2px; }
+
+        /* Wipe Menu Options */
+        .wipe-menu { display: none; background: rgba(128,128,128,0.1); padding: 15px; border-radius: 10px; margin-top: 10px; border: 1px solid #555; }
+        body.light-mode .wipe-menu { border-color: #ccc; }
 
         /* 1-Player Minigames */
         .mg-area-box { width: 100%; height: 35vh; background-color: var(--bg-color); border-radius: 10px; position: relative; overflow: hidden; touch-action: none; margin-bottom: 15px; }
@@ -67,30 +77,34 @@
         #mg-react-area { display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; cursor: pointer; text-align: center; padding: 10px; box-sizing: border-box; }
         #mg-sprint-btn { width: 100%; height: 35vh; background-color: var(--accent-main); border-radius: 20px; border: none; color: white; font-size: 40px; font-weight: bold; cursor: pointer; touch-action: none; -webkit-tap-highlight-color: transparent; }
         #mg-sprint-btn:active { transform: scale(0.95); }
+        
+        /* Fixed Grid Cell Theming */
         .grid-wrapper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; aspect-ratio: 1; background-color: var(--bg-color); padding: 10px; border-radius: 10px; box-sizing: border-box; touch-action: none; margin-bottom: 15px;}
-        .grid-cell { background-color: #444; border-radius: 8px; cursor: pointer; transition: 0.1s; -webkit-tap-highlight-color: transparent; }
-        body.light-mode .grid-cell { background-color: #ddd; }
-        .grid-cell.active { background-color: var(--accent-main); }
-        .grid-cell.flash { background-color: #fff !important; }
+        .grid-cell { background-color: #444; border-radius: 8px; cursor: pointer; transition: 0.1s; -webkit-tap-highlight-color: transparent; border: 2px solid transparent; box-sizing: border-box;}
+        body.light-mode .grid-cell { background-color: #e0e0e0; border-color: #bbb; }
+        .grid-cell.active { background-color: var(--accent-main) !important; border-color: var(--accent-main) !important; }
+        .grid-cell.flash { background-color: var(--accent-main) !important; border-color: var(--accent-main) !important; box-shadow: 0 0 15px var(--accent-main); }
 
         /* Minefield, Juggler, Simon */
         .mf-targ { position: absolute; width: 45px; height: 45px; border-radius: 50%; background: #4CAF50; cursor: pointer; z-index: 2; -webkit-tap-highlight-color: transparent;}
         .mf-bomb { position: absolute; width: 45px; height: 45px; border-radius: 10px; background: #E53935; cursor: pointer; z-index: 1; -webkit-tap-highlight-color: transparent;}
         #jg-ball { position: absolute; width: 60px; height: 60px; background-color: var(--accent-main); border-radius: 50%; left: 50%; transform: translateX(-50%); cursor: pointer; -webkit-tap-highlight-color: transparent; display: none; box-shadow: inset -5px -5px 15px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.5);}
 
-        /* 2-Player Versus */
+        /* 2-Player Versus DOMINATION Effect */
         .vs-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; flex-direction: column; z-index: 20; overflow: hidden; touch-action: none;}
-        .vs-half { height: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .vs-half { height: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden;}
         .vs-p1 { background-color: var(--p1-color); transform: rotate(180deg); }
         .vs-p2 { background-color: var(--p2-color); }
         .vs-score { font-size: 80px; font-weight: bold; color: white; margin: 0; pointer-events: none;}
-        .vs-label { font-size: 20px; font-weight: bold; color: rgba(255,255,255,0.7); pointer-events: none;}
-        .vs-timer-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; color: white; padding: 15px 30px; border-radius: 30px; font-size: 32px; font-weight: bold; z-index: 25; pointer-events: none; border: 4px solid #fff;}
-        .vs-close-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.5); color: white; border: 2px solid white; padding: 8px 15px; border-radius: 8px; z-index: 30; font-weight: bold; cursor: pointer;}
-        .tug-rope-container { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 10px; height: 100%; background: #222; z-index: 22; pointer-events: none; display: none;}
-        .tug-knot { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: white; border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,255,0.9); transition: top 0.05s linear; border: 5px solid #111; }
-        .tug-winzone-p1 { position: absolute; top: 0; left: -20px; width: 50px; height: 15%; background: rgba(229,57,53,0.4); border-bottom: 2px dashed #E53935; }
-        .tug-winzone-p2 { position: absolute; bottom: 0; left: -20px; width: 50px; height: 15%; background: rgba(33,150,243,0.4); border-top: 2px dashed #2196F3; }
+        .vs-timer-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; color: white; padding: 15px 30px; border-radius: 30px; font-size: 32px; font-weight: bold; z-index: 25; pointer-events: none; border: 4px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center;}
+        .vs-close-btn { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.5); color: white; border: 2px solid white; padding: 8px 15px; border-radius: 8px; z-index: 999; font-weight: bold; cursor: pointer;}
+        
+        /* Tug of War Upgrades */
+        @keyframes pulse-zone { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; box-shadow: 0 0 25px currentColor; } }
+        .tug-rope-container { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 12px; height: 100%; background: #111; z-index: 22; pointer-events: none; display: none; border-radius: 6px; box-shadow: inset 0 0 5px black;}
+        .tug-knot { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; background: white; border-radius: 50%; box-shadow: 0 0 20px rgba(255,255,255,0.9); transition: top 0.05s linear; border: 6px solid #111; z-index: 24;}
+        .tug-winzone-p1 { position: absolute; top: 0; left: -20px; width: 52px; height: 15%; background: rgba(229,57,53,0.5); border-bottom: 4px dashed white; animation: pulse-zone 1.5s infinite; color: #E53935; z-index: 23;}
+        .tug-winzone-p2 { position: absolute; bottom: 0; left: -20px; width: 52px; height: 15%; background: rgba(33,150,243,0.5); border-top: 4px dashed white; animation: pulse-zone 1.5s infinite; color: #2196F3; z-index: 23;}
 
         /* Shared UI Elements */
         canvas { background: var(--bg-color); border-radius: 8px; margin: 15px 0; width: 100%; height: 150px; }
@@ -108,11 +122,11 @@
 <body>
 
     <div class="header">
-        <button class="btn-small" style="width: auto;" onclick="showModal('settings-modal')">⚙️ Settings</button>
+        <button class="btn-small" style="width: auto;" onclick="showModal('settings-modal')">⚙ Settings</button>
         <img src="icon.svg" alt="Logo" style="width: 40px; height: 40px; border-radius: 10px;">
         <div class="header-controls">
             <button class="btn-small" onclick="showLeaderboard()">🏆 Leaderboard</button>
-            <button class="btn-small" style="background-color: #555;" onclick="openMinigameHub()">🎯 Arcade</button>
+            <button class="btn-small" onclick="openMinigameHub()">🎯 Arcade</button>
         </div>
     </div>
 
@@ -127,7 +141,13 @@
         </div>
         <div id="pb-label">Personal Best: 0.00 CPS</div>
         <button id="click-btn">START</button>
-        <button id="pause-btn" class="btn-small" onclick="togglePause()">⏸ Pause</button>
+        
+        <!-- Main Game Pause/Restart Row -->
+        <div id="controls-row" style="display: none; justify-content: center; gap: 10px; margin-top: 15px; width: 85%;">
+            <button id="pause-btn" class="btn-small" style="margin-top: 0; padding: 10px 20px; font-size: 18px;" onclick="togglePause()">⏸ Pause</button>
+            <button id="restart-main-btn" class="btn-small danger-btn" style="display: none; margin-top: 0; padding: 10px 20px; font-size: 18px;" onclick="resetGame()">🔄 Restart</button>
+        </div>
+        
         <div class="stats">
             <span id="score-label">Clicks: 0</span>
             <span id="cps-label">CPS: 0.00</span>
@@ -141,7 +161,6 @@
             <div id="mg-menu-screen" class="game-screen" style="display:block;">
                 <div class="mg-header"><h2 style="margin: 0;">Arcade</h2><button class="btn-small danger-btn" style="width: auto;" onclick="closeMinigames()">Close</button></div>
                 <div style="max-height: 60vh; overflow-y: auto; padding-right: 5px;">
-                    <!-- Only Versus gets the border -->
                     <button class="mg-menu-btn" style="border-color: #E91E63;" onclick="showGame('versus')">👯 Versus (2 Player)</button>
                     <button class="mg-menu-btn" onclick="showGame('target')">🎯 Target Practice</button>
                     <button class="mg-menu-btn" onclick="showGame('react')">⚡ Reaction Time</button>
@@ -163,23 +182,58 @@
             
             <!-- TARGET PRACTICE -->
             <div id="mg-target-screen" class="game-screen">
-                <div class="mg-header"><h2 style="margin: 0;">Target Practice</h2><button class="mg-back-btn" onclick="backToHub()">Back</button></div>
-                <div class="mg-top-stats"><span id="tg-timer-label">Time: 10.0s</span><span id="tg-score-label" style="color: var(--accent-main);">Hits: 0</span></div>
+                <div class="mg-header">
+                    <h2 style="margin: 0;">Target Practice</h2>
+                    <div style="display:flex; gap:5px;">
+                        <button class="mg-back-btn" style="padding: 4px 10px;" onclick="showRules('target')">❔</button>
+                        <button id="pause-target" class="mg-back-btn mg-pause-btn" style="display:none; padding: 4px 10px;" onclick="toggleMgPause()">⏸</button>
+                        <button id="restart-target" class="mg-back-btn danger-btn mg-restart-btn" style="display:none; padding: 4px 10px;" onclick="restartCurrentMg()">🔄</button>
+                        <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                    </div>
+                </div>
+                <div class="mg-top-stats">
+                    <span id="tg-timer-label">Time: 10.0s</span>
+                    <span id="tg-best-label" style="color: var(--text-muted); font-size: 14px;">Best: 0</span>
+                    <span id="tg-score-label" style="color: var(--accent-main);">Hits: 0</span>
+                </div>
                 <div id="mg-target-area" class="mg-area-box"><button id="tg-start-btn" class="action-btn accent-btn" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60%;" onclick="startTargetGame()">START</button><div id="mg-target" onmousedown="hitTarget(event)" ontouchstart="hitTarget(event)"></div></div>
                 <p id="tg-final" style="font-weight: bold; display: none;">Final Score: 0 Hits!</p>
             </div>
 
             <!-- REACTION TIME -->
             <div id="mg-react-screen" class="game-screen">
-                <div class="mg-header"><h2 style="margin: 0;">Reaction Time</h2><button class="mg-back-btn" onclick="backToHub()">Back</button></div>
+                <div class="mg-header">
+                    <h2 style="margin: 0;">Reaction Time</h2>
+                    <div style="display:flex; gap:5px;">
+                        <button class="mg-back-btn" style="padding: 4px 10px;" onclick="showRules('react')">❔</button>
+                        <button id="pause-react" class="mg-back-btn mg-pause-btn" style="display:none; padding: 4px 10px;" onclick="toggleMgPause()">⏸</button>
+                        <button id="restart-react" class="mg-back-btn danger-btn mg-restart-btn" style="display:none; padding: 4px 10px;" onclick="restartCurrentMg()">🔄</button>
+                        <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                    </div>
+                </div>
+                <div class="mg-top-stats" style="justify-content: center; margin-bottom: 15px;">
+                    <span id="re-best-label" style="color: var(--text-muted); font-size: 14px;">Best: --</span>
+                </div>
                 <div id="mg-react-area" class="mg-area-box" style="background:#555;" onmousedown="handleReactClick(event)" ontouchstart="handleReactClick(event)">Click to Start</div>
-                <p style="color: var(--text-muted); font-size: 14px;">Click immediately when it turns green!</p>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 15px;">Click immediately when it turns green!</p>
             </div>
 
             <!-- 100 CLICK SPRINT -->
             <div id="mg-sprint-screen" class="game-screen">
-                <div class="mg-header"><h2 style="margin: 0;">100-Click Sprint</h2><button class="mg-back-btn" onclick="backToHub()">Back</button></div>
-                <div class="mg-top-stats"><span id="sp-timer-label">Time: 0.00s</span><span id="sp-score-label" style="color: var(--accent-main);">0 / 100</span></div>
+                <div class="mg-header">
+                    <h2 style="margin: 0;">100-Click Sprint</h2>
+                    <div style="display:flex; gap:5px;">
+                        <button class="mg-back-btn" style="padding: 4px 10px;" onclick="showRules('sprint')">❔</button>
+                        <button id="pause-sprint" class="mg-back-btn mg-pause-btn" style="display:none; padding: 4px 10px;" onclick="toggleMgPause()">⏸</button>
+                        <button id="restart-sprint" class="mg-back-btn danger-btn mg-restart-btn" style="display:none; padding: 4px 10px;" onclick="restartCurrentMg()">🔄</button>
+                        <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                    </div>
+                </div>
+                <div class="mg-top-stats">
+                    <span id="sp-timer-label">Time: 0.00s</span>
+                    <span id="sp-best-label" style="color: var(--text-muted); font-size: 14px;">Best: --</span>
+                    <span id="sp-score-label" style="color: var(--accent-main);">0 / 100</span>
+                </div>
                 <button id="mg-sprint-btn" onmousedown="handleSprintClick(event)" ontouchstart="handleSprintClick(event)">START</button>
                 <p id="sp-final" style="font-weight: bold; display: none; margin-top: 15px;">Final Time: 0.00s!</p>
                 <button id="sp-reset-btn" class="action-btn theme-btn" style="display:none;" onclick="resetSprint()">Play Again</button>
@@ -187,8 +241,20 @@
 
             <!-- GRID MODE -->
             <div id="mg-grid-screen" class="game-screen">
-                <div class="mg-header"><h2 style="margin: 0;">Grid Mode</h2><button class="mg-back-btn" onclick="backToHub()">Back</button></div>
-                <div class="mg-top-stats"><span id="gr-timer-label">Time: 10.0s</span><span id="gr-score-label" style="color: var(--accent-main);">Score: 0</span></div>
+                <div class="mg-header">
+                    <h2 style="margin: 0;">Grid Mode</h2>
+                    <div style="display:flex; gap:5px;">
+                        <button class="mg-back-btn" style="padding: 4px 10px;" onclick="showRules('grid')">❔</button>
+                        <button id="pause-grid" class="mg-back-btn mg-pause-btn" style="display:none; padding: 4px 10px;" onclick="toggleMgPause()">⏸</button>
+                        <button id="restart-grid" class="mg-back-btn danger-btn mg-restart-btn" style="display:none; padding: 4px 10px;" onclick="restartCurrentMg()">🔄</button>
+                        <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                    </div>
+                </div>
+                <div class="mg-top-stats">
+                    <span id="gr-timer-label">Time: 10.0s</span>
+                    <span id="gr-best-label" style="color: var(--text-muted); font-size: 14px;">Best: 0</span>
+                    <span id="gr-score-label" style="color: var(--accent-main);">Score: 0</span>
+                </div>
                 <div id="mg-grid-area" class="grid-wrapper"></div>
                 <button id="gr-start-btn" class="action-btn accent-btn" onclick="startGridGame()">START GAME</button>
                 <p id="gr-final" style="font-weight: bold; display: none;">Final Score: 0!</p>
@@ -196,8 +262,20 @@
 
             <!-- MINEFIELD -->
             <div id="mg-minefield-screen" class="game-screen">
-                <div class="mg-header"><h2 style="margin: 0;">Minefield</h2><button class="mg-back-btn" onclick="backToHub()">Back</button></div>
-                <div class="mg-top-stats"><span id="mf-timer-label">Time: 10.0s</span><span id="mf-score-label" style="color: #4CAF50;">Score: 0</span></div>
+                <div class="mg-header">
+                    <h2 style="margin: 0;">Minefield</h2>
+                    <div style="display:flex; gap:5px;">
+                        <button class="mg-back-btn" style="padding: 4px 10px;" onclick="showRules('minefield')">❔</button>
+                        <button id="pause-minefield" class="mg-back-btn mg-pause-btn" style="display:none; padding: 4px 10px;" onclick="toggleMgPause()">⏸</button>
+                        <button id="restart-minefield" class="mg-back-btn danger-btn mg-restart-btn" style="display:none; padding: 4px 10px;" onclick="restartCurrentMg()">🔄</button>
+                        <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                    </div>
+                </div>
+                <div class="mg-top-stats">
+                    <span id="mf-timer-label">Time: 10.0s</span>
+                    <span id="mf-best-label" style="color: var(--text-muted); font-size: 14px;">Best: 0</span>
+                    <span id="mf-score-label" style="color: #4CAF50;">Score: 0</span>
+                </div>
                 <div id="mf-area" class="mg-area-box">
                     <button id="mf-start-btn" class="action-btn success-btn" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60%;z-index:10;" onclick="startMinefield()">START</button>
                 </div>
@@ -206,8 +284,19 @@
 
             <!-- KEEP IT UP (JUGGLER) -->
             <div id="mg-juggler-screen" class="game-screen">
-                <div class="mg-header"><h2 style="margin: 0;">Keep It Up</h2><button class="mg-back-btn" onclick="backToHub()">Back</button></div>
-                <div class="mg-top-stats"><span style="color:var(--text-muted);">Don't let it fall!</span><span id="jg-score-label" style="color: #FF9800;">Juggles: 0</span></div>
+                <div class="mg-header">
+                    <h2 style="margin: 0;">Keep It Up</h2>
+                    <div style="display:flex; gap:5px;">
+                        <button class="mg-back-btn" style="padding: 4px 10px;" onclick="showRules('juggler')">❔</button>
+                        <button id="pause-juggler" class="mg-back-btn mg-pause-btn" style="display:none; padding: 4px 10px;" onclick="toggleMgPause()">⏸</button>
+                        <button id="restart-juggler" class="mg-back-btn danger-btn mg-restart-btn" style="display:none; padding: 4px 10px;" onclick="restartCurrentMg()">🔄</button>
+                        <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                    </div>
+                </div>
+                <div class="mg-top-stats">
+                    <span id="jg-best-label" style="color: var(--text-muted); font-size: 14px;">Best: 0</span>
+                    <span id="jg-score-label" style="color: #FF9800;">Juggles: 0</span>
+                </div>
                 <div id="jg-area" class="mg-area-box">
                     <button id="jg-start-btn" class="action-btn theme-btn" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60%;z-index:10; background:#FF9800;" onclick="startJuggler()">START</button>
                     <div id="jg-ball" onmousedown="tapJuggler(event)" ontouchstart="tapJuggler(event)"></div>
@@ -217,10 +306,22 @@
 
             <!-- SIMON SAYS -->
             <div id="mg-simon-screen" class="game-screen">
-                <div class="mg-header"><h2 style="margin: 0;">Simon Says</h2><button class="mg-back-btn" onclick="backToHub()">Back</button></div>
-                <div class="mg-top-stats"><span id="sm-status" style="color:var(--text-muted);">Watch closely...</span><span id="sm-score-label" style="color: #9C27B0;">Level: 1</span></div>
+                <div class="mg-header">
+                    <h2 style="margin: 0;">Simon Says</h2>
+                    <div style="display:flex; gap:5px;">
+                        <button class="mg-back-btn" style="padding: 4px 10px;" onclick="showRules('simon')">❔</button>
+                        <button id="pause-simon" class="mg-back-btn mg-pause-btn" style="display:none; padding: 4px 10px;" onclick="toggleMgPause()">⏸</button>
+                        <button id="restart-simon" class="mg-back-btn danger-btn mg-restart-btn" style="display:none; padding: 4px 10px;" onclick="restartCurrentMg()">🔄</button>
+                        <button class="mg-back-btn" onclick="backToHub()">Back</button>
+                    </div>
+                </div>
+                <div class="mg-top-stats">
+                    <span id="sm-status" style="color:var(--text-muted);">Watch closely...</span>
+                    <span id="sm-best-label" style="color: var(--text-muted); font-size: 14px;">Best: 1</span>
+                    <span id="sm-score-label" style="color: var(--accent-main);">Level: 1</span>
+                </div>
                 <div id="sm-grid-area" class="grid-wrapper"></div>
-                <button id="sm-start-btn" class="action-btn theme-btn" style="background:#9C27B0;" onclick="startSimon()">START GAME</button>
+                <button id="sm-start-btn" class="action-btn accent-btn" onclick="startSimon()">START GAME</button>
                 <p id="sm-final" style="font-weight: bold; display: none;">Game Over! Reached Level 1</p>
             </div>
         </div>
@@ -228,11 +329,16 @@
 
     <!-- FULLSCREEN VERSUS -->
     <div id="vs-container" class="vs-screen">
-        <button class="vs-close-btn" onclick="exitVersus()">Exit</button>
+        <!-- Versus Rules Button -->
+        <div style="position: absolute; top: 20px; left: 20px; z-index: 999; display:flex; gap:10px;">
+            <button class="vs-close-btn" style="position:relative; top:0; left:0; padding: 8px 12px;" onclick="showRules('versus')">❔ Rules</button>
+        </div>
+        
+        <button class="vs-close-btn" onclick="exitVersus()" ontouchstart="exitVersus(); event.preventDefault();">Exit</button>
         <div id="vs-timer" class="vs-timer-overlay">READY</div>
         <div id="vs-rope-container" class="tug-rope-container"><div class="tug-winzone-p1"></div><div id="vs-knot" class="tug-knot"></div><div class="tug-winzone-p2"></div></div>
-        <div id="vs-area-p1" class="vs-half vs-p1" onmousedown="vsClick(1, event)" ontouchstart="vsClick(1, event)"><p id="vs-label-p1" class="vs-label">PLAYER 1</p><p id="vs-score-p1" class="vs-score">0</p></div>
-        <div id="vs-area-p2" class="vs-half vs-p2" onmousedown="vsClick(2, event)" ontouchstart="vsClick(2, event)"><p id="vs-label-p2" class="vs-label">PLAYER 2</p><p id="vs-score-p2" class="vs-score">0</p></div>
+        <div id="vs-area-p1" class="vs-half vs-p1" onmousedown="vsClick(1, event)" ontouchstart="vsClick(1, event)"><p id="vs-score-p1" class="vs-score">0</p></div>
+        <div id="vs-area-p2" class="vs-half vs-p2" onmousedown="vsClick(2, event)" ontouchstart="vsClick(2, event)"><p id="vs-score-p2" class="vs-score">0</p></div>
     </div>
 
     <!-- LEADERBOARD MODAL -->
@@ -244,6 +350,15 @@
         </div>
     </div>
 
+    <!-- RULES MODAL -->
+    <div class="modal" id="rules-modal" style="z-index: 9999;">
+        <div class="modal-content">
+            <h2 id="rules-title">Rules</h2>
+            <p id="rules-text" style="color: var(--text-muted); line-height: 1.5; font-size: 16px; margin: 20px 0;"></p>
+            <button class="action-btn theme-btn" onclick="hideModals()">Got It</button>
+        </div>
+    </div>
+
     <!-- STANDARD MODALS -->
     <div class="modal" id="end-modal">
         <div class="modal-content">
@@ -252,8 +367,12 @@
             <p id="end-stats" style="color: var(--text-muted); margin: 0 0 15px 0;">Clicks: 0 | Rank: N/A</p>
             <canvas id="cps-graph"></canvas>
             <p id="end-pb-alert" style="font-weight: bold; font-size: 20px;"></p>
-            <button class="action-btn accent-btn" onclick="copyResults()">📋 Copy Result</button>
-            <button class="action-btn accent-btn" onclick="resetGame()">🔄 Play Again</button>
+            
+            <!-- Big, primary Play Again button -->
+            <button class="action-btn accent-btn" style="padding: 18px 20px; font-size: 22px; margin-bottom: 15px;" onclick="resetGame()">🔄 Play Again</button>
+            
+            <!-- Smaller, secondary Copy button -->
+            <button class="action-btn theme-btn" style="padding: 10px 20px; font-size: 14px;" onclick="copyResults()">📋 Copy Result</button>
         </div>
     </div>
     
@@ -266,8 +385,19 @@
             <p style="margin-top: 20px;">Theme Color</p>
             <div class="color-grid" id="color-grid"></div>
             <hr style="border-color: #444; margin: 20px 0;">
-            <button class="action-btn danger-btn" id="wipe-btn" onclick="wipeLeaderboard()">🗑 Wipe Leaderboard</button>
-            <button class="action-btn" style="background:#555;" onclick="hideModals()">Done</button>
+            <button class="action-btn theme-btn" onclick="undoLastScore()">↩️ Undo Last Score</button>
+            
+            <button class="action-btn danger-btn" id="wipe-main-btn" onclick="toggleWipeMenu()">🗑 Wipe Data...</button>
+            
+            <div id="wipe-options" class="wipe-menu">
+                <p style="margin-top: 0; margin-bottom: 15px; font-weight: bold; color: #E53935;">Select what to wipe:</p>
+                <button class="action-btn danger-btn" onclick="executeWipe('main')">🗑 Wipe Main CPS Scores</button>
+                <button class="action-btn danger-btn" onclick="executeWipe('arcade')">🗑 Wipe Arcade Best Scores</button>
+                <button class="action-btn danger-btn" onclick="executeWipe('all')" style="border: 2px solid white;">🚨 Wipe EVERYTHING</button>
+                <button class="action-btn theme-btn" style="margin-top: 10px;" onclick="toggleWipeMenu()">Cancel</button>
+            </div>
+
+            <button class="action-btn" style="background:#555; margin-top: 15px;" onclick="hideModals()">Done</button>
         </div>
     </div>
 
@@ -276,6 +406,100 @@
         const colors = { "Pink": ["#E91E63", "#4A0920"], "Red": ["#E53935", "#380B0A"], "Orange": ["#FF9800", "#4A2C00"], "Yellow": ["#FFB300", "#4A3300"], "Green": ["#2CC985", "#0B3322"], "Blue": ["#2196F3", "#0A2440"], "Indigo": ["#3F51B5", "#0A1138"], "Violet": ["#9C27B0", "#2A0A30"] };
         let currentCategory = "5.0"; let duration = 5.0; let timeLeft = 5.0; let clicks = 0; let isRunning = false; let isFinished = false; let isPaused = false; let timerInterval; let clickTimestamps = [];
         let highScores = JSON.parse(localStorage.getItem('cps_highscores')) || { "1.0": [], "3.0": [], "5.0": [], "10.0": [], "60.0": [], "custom": [] };
+        
+        // ARCADE VARS & HIGH SCORES
+        let currentMg = null; let mgPaused = false;
+        let tgRun = false; let spRun = false; let grRun = false; let mfRun = false; let jgRun = false; let smRun = false;
+        
+        let arcadeScores = JSON.parse(localStorage.getItem('cps_arcade_scores')) || { target: 0, react: 99999, sprint: 99999, grid: 0, minefield: 0, juggler: 0, simon: 1 };
+        
+        function saveArcadeScores() { localStorage.setItem('cps_arcade_scores', JSON.stringify(arcadeScores)); updateArcadeBestUI(); }
+        
+        // Bulletproof UI updater to prevent corrupted local storage from crashing the app
+        function updateArcadeBestUI() {
+            try {
+                let tBest = Number(arcadeScores.target) || 0;
+                document.getElementById('tg-best-label').innerText = `Best: ${tBest}`;
+
+                let rBest = Number(arcadeScores.react) || 99999;
+                document.getElementById('re-best-label').innerText = `Best: ${rBest === 99999 ? '--' : rBest.toFixed(0) + ' ms'}`;
+
+                let sBest = Number(arcadeScores.sprint) || 99999;
+                document.getElementById('sp-best-label').innerText = `Best: ${sBest === 99999 ? '--' : sBest.toFixed(2) + 's'}`;
+
+                let gBest = Number(arcadeScores.grid) || 0;
+                document.getElementById('gr-best-label').innerText = `Best: ${gBest}`;
+
+                let mBest = Number(arcadeScores.minefield) || 0;
+                document.getElementById('mf-best-label').innerText = `Best: ${mBest}`;
+
+                let jBest = Number(arcadeScores.juggler) || 0;
+                document.getElementById('jg-best-label').innerText = `Best: ${jBest}`;
+
+                let smBest = Number(arcadeScores.simon) || 1;
+                document.getElementById('sm-best-label').innerText = `Best: ${smBest}`;
+            } catch (e) {
+                console.error("Failed to update best scores:", e);
+            }
+        }
+
+        // --- UNDO ENGINE ---
+        let lastStateSnapshot = null;
+        function saveStateForUndo() {
+            lastStateSnapshot = {
+                highScores: JSON.parse(JSON.stringify(highScores)),
+                arcadeScores: JSON.parse(JSON.stringify(arcadeScores))
+            };
+        }
+        function undoLastScore() {
+            if (lastStateSnapshot) {
+                highScores = lastStateSnapshot.highScores;
+                arcadeScores = lastStateSnapshot.arcadeScores;
+                localStorage.setItem('cps_highscores', JSON.stringify(highScores));
+                saveArcadeScores();
+                updatePBDisplay();
+                lastStateSnapshot = null; 
+                playSound('bloop');
+                alert("Undo successful! Restored previous scores.");
+                hideModals();
+            } else {
+                playSound('boom');
+                alert("Nothing to undo right now!");
+            }
+        }
+
+        // --- WIPE ENGINE ---
+        function toggleWipeMenu() {
+            playSound('click');
+            const opts = document.getElementById('wipe-options');
+            const btn = document.getElementById('wipe-main-btn');
+            if(opts.style.display === 'none' || opts.style.display === '') {
+                opts.style.display = 'block';
+                btn.style.display = 'none';
+            } else {
+                opts.style.display = 'none';
+                btn.style.display = 'block';
+            }
+        }
+
+        function executeWipe(type) {
+            if(confirm("Are you sure? (You can use Undo to revert this if it was a mistake).")) {
+                saveStateForUndo();
+                if(type === 'main' || type === 'all') {
+                    highScores = { "1.0": [], "3.0": [], "5.0": [], "10.0": [], "60.0": [], "custom": [] }; 
+                    localStorage.setItem('cps_highscores', JSON.stringify(highScores));
+                    updatePBDisplay();
+                }
+                if(type === 'arcade' || type === 'all') {
+                    arcadeScores = { target: 0, react: 99999, sprint: 99999, grid: 0, minefield: 0, juggler: 0, simon: 1 };
+                    saveArcadeScores();
+                }
+                hideModals();
+                playSound('boom'); 
+                triggerShake();
+            }
+        }
+
         const root = document.documentElement;
 
         // --- AUDIO ENGINE (WEB AUDIO API) ---
@@ -328,9 +552,11 @@
 
         // --- VISUAL JUICE ENGINE ---
         function triggerShake() { document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 400); }
-        function spawnConfetti() {
-            const cols = ['#E91E63', '#2196F3', '#4CAF50', '#FF9800', '#FFEB3B'];
-            for(let i=0; i<60; i++) {
+        function triggerBigShake() { document.body.classList.add('big-shake'); setTimeout(() => document.body.classList.remove('big-shake'), 500); }
+        function spawnConfetti(customCols, amount) {
+            const count = amount || 60;
+            const cols = customCols || ['#E91E63', '#2196F3', '#4CAF50', '#FF9800', '#FFEB3B'];
+            for(let i=0; i<count; i++) {
                 let c = document.createElement('div'); c.className = 'confetti'; c.style.backgroundColor = cols[Math.floor(Math.random()*cols.length)];
                 c.style.left = Math.random() * 100 + 'vw'; c.style.top = '-20px'; document.body.appendChild(c);
                 let dur = Math.random() * 2 + 1.5; c.style.transition = `transform ${dur}s linear, top ${dur}s cubic-bezier(.37,0,.63,1), opacity ${dur}s`;
@@ -340,7 +566,7 @@
         }
 
         // --- INIT & THEMES ---
-        setupTheme(); setupColors(); updatePBDisplay();
+        setupTheme(); setupColors(); updatePBDisplay(); updateArcadeBestUI();
         function setupTheme() { if (localStorage.getItem('cps_theme') === 'light') document.body.classList.add('light-mode'); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('cps_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); playSound('click');}
         function setupColors() {
@@ -356,38 +582,108 @@
         function setTime(seconds) { if (isRunning) return; playSound('click'); duration = parseFloat(seconds); timeLeft = duration; document.getElementById("custom-time").value = duration; currentCategory = [1, 3, 5, 10, 60].includes(duration) ? duration.toFixed(1) : "custom"; document.getElementById("timer").innerText = `Time left: ${timeLeft.toFixed(1)}s`; updatePBDisplay(); }
         function updateCustomTime() { let val = parseFloat(document.getElementById("custom-time").value); if (isNaN(val) || val <= 0) val = 5.0; setTime(val); }
         function updatePBDisplay() { let scores = highScores[currentCategory] || []; let topCps = scores.length > 0 ? scores[0].cps : 0.00; let catName = currentCategory === "custom" ? "Custom" : `${currentCategory}s`; document.getElementById("pb-label").innerText = `Personal Best (${catName}): ${topCps.toFixed(2)} CPS`; }
-        function togglePause() { if (!isRunning || isFinished) return; isPaused = !isPaused; let btn = document.getElementById("click-btn"); let pBtn = document.getElementById("pause-btn"); if (isPaused) { pBtn.innerText = "▶ Resume"; btn.innerText = "PAUSED"; btn.style.backgroundColor = "#555"; playSound('bloop');} else { pBtn.innerText = "⏸ Pause"; btn.innerText = clicks; btn.style.backgroundColor = "var(--accent-flash)"; playSound('click');} }
-        function autoPauseCheck() { if (isRunning && !isPaused && !isFinished) { togglePause(); } }
+        
+        function togglePause() { 
+            if (!isRunning || isFinished) return; 
+            isPaused = !isPaused; 
+            let btn = document.getElementById("click-btn"); 
+            let pBtn = document.getElementById("pause-btn"); 
+            let rBtn = document.getElementById("restart-main-btn");
+            if (isPaused) { 
+                pBtn.innerText = "▶ Resume"; 
+                btn.innerText = "PAUSED"; 
+                btn.style.backgroundColor = "#555"; 
+                rBtn.style.display = "block";
+                playSound('bloop');
+            } else { 
+                pBtn.innerText = "⏸ Pause"; 
+                btn.innerText = clicks; 
+                btn.style.backgroundColor = "var(--accent-flash)"; 
+                rBtn.style.display = "none";
+                playSound('click');
+            } 
+        }
+        
+        function autoPauseCheck() { 
+            if (isRunning && !isPaused && !isFinished) { togglePause(); } 
+            
+            // Auto pause minigames too! (excluding versus)
+            if (currentMg && currentMg !== 'versus' && !mgPaused) { 
+                let isMgRunning = false;
+                if (currentMg === 'target' && tgRun) isMgRunning = true;
+                if (currentMg === 'react' && reactState !== 'idle') isMgRunning = true;
+                if (currentMg === 'sprint' && spRun) isMgRunning = true;
+                if (currentMg === 'grid' && grRun) isMgRunning = true;
+                if (currentMg === 'minefield' && mfRun) isMgRunning = true;
+                if (currentMg === 'juggler' && jgRun) isMgRunning = true;
+                if (currentMg === 'simon' && smRun) isMgRunning = true;
+                
+                if (isMgRunning) toggleMgPause(); 
+            }
+        }
 
         const clickBtn = document.getElementById("click-btn");
         clickBtn.addEventListener('mousedown', (e) => { if (e.button === 0) handleTap(e); });
         clickBtn.addEventListener('touchstart', (e) => { e.preventDefault(); for (let i = 0; i < e.changedTouches.length; i++) handleTap(e); }, { passive: false });
 
         function handleTap(e) {
-            if (isFinished || isPaused) return; 
+            if (isFinished) return; 
+            if (isPaused) { togglePause(); return; } // Tap screen to instantly unpause!
+
             if (navigator.vibrate) navigator.vibrate(10); 
             playSound('click'); 
 
-            if (!isRunning) { isRunning = true; clicks = 1; clickTimestamps = [0]; clickBtn.innerText = clicks; clickBtn.style.backgroundColor = "var(--accent-flash)"; document.getElementById("pause-btn").style.display = "block"; timerInterval = setInterval(updateTimer, 50); } else { clicks++; clickBtn.innerText = clicks; clickTimestamps.push(duration - timeLeft); }
+            if (!isRunning) { 
+                isRunning = true; clicks = 1; clickTimestamps = [0]; 
+                clickBtn.innerText = clicks; 
+                clickBtn.style.backgroundColor = "var(--accent-flash)"; 
+                document.getElementById("controls-row").style.display = "flex"; 
+                document.getElementById("pause-btn").style.display = "block"; 
+                timerInterval = setInterval(updateTimer, 50); 
+            } else { 
+                clicks++; clickBtn.innerText = clicks; clickTimestamps.push(duration - timeLeft); 
+            }
             document.getElementById("score-label").innerText = `Clicks: ${clicks}`; document.getElementById("cps-label").innerText = `CPS: ${(clicks / Math.max(duration - timeLeft, 0.001)).toFixed(2)}`;
         }
         function updateTimer() { if (isPaused) return; timeLeft -= 0.05; if (timeLeft <= 0) { timeLeft = 0; endGame(); } document.getElementById("timer").innerText = `Time left: ${timeLeft.toFixed(1)}s`; }
+        
         function endGame() {
-            clearInterval(timerInterval); isRunning = false; isFinished = true; isPaused = false; document.getElementById("pause-btn").style.display = "none";
+            clearInterval(timerInterval); isRunning = false; isFinished = true; isPaused = false; 
+            document.getElementById("controls-row").style.display = "none";
             let finalCPS = clicks / duration; let rank = finalCPS < 5 ? "🐢 Turtle" : finalCPS < 8 ? "🚶 Walker" : finalCPS < 12 ? "🏃 Sprinter" : "⚡ Lightning";
-            let scores = highScores[currentCategory] || []; let isPB = scores.length === 0 || finalCPS > scores[0].cps;
+            
+            saveStateForUndo(); 
+            
+            let scores = highScores[currentCategory] || []; 
+            let topCps = scores.length > 0 ? scores[0].cps : 0;
+            
+            let displayedFinal = finalCPS.toFixed(2);
+            let displayedTop = topCps.toFixed(2);
+            
+            let isNewPB = scores.length === 0 || parseFloat(displayedFinal) > parseFloat(displayedTop);
+            let isMatchedPB = !isNewPB && scores.length > 0 && displayedFinal === displayedTop;
+
             scores.push({cps: finalCPS, clicks: clicks}); scores.sort((a, b) => b.cps - a.cps); highScores[currentCategory] = scores.slice(0, 10); localStorage.setItem('cps_highscores', JSON.stringify(highScores));
             document.getElementById("end-cps").innerText = `${finalCPS.toFixed(2)} CPS`; document.getElementById("end-stats").innerText = `Total Clicks: ${clicks} | Rank: ${rank}`;
+            
             let pbAlert = document.getElementById("end-pb-alert"); 
-            if (isPB) { 
-                pbAlert.innerText = "🏆 NEW PERSONAL BEST! 🏆"; pbAlert.style.color = "#4CAF50"; 
-                playSound('victory'); spawnConfetti();
+            if (isNewPB) { 
+                pbAlert.innerText = "🏆 NEW PERSONAL BEST! 🏆"; 
+                pbAlert.style.color = "#4CAF50"; 
+                playSound('victory'); 
+                spawnConfetti();
+            } else if (isMatchedPB) {
+                pbAlert.innerText = "🤝 MATCHED PERSONAL BEST! 🤝"; 
+                pbAlert.style.color = "#FF9800"; 
+                playSound('bloop');
             } else { 
-                pbAlert.innerText = `PB: ${scores[0].cps.toFixed(2)} CPS`; pbAlert.style.color = "var(--text-muted)"; 
+                pbAlert.innerText = `PB: ${scores[0].cps.toFixed(2)} CPS`; 
+                pbAlert.style.color = "var(--text-muted)"; 
                 playSound('bloop');
             }
             drawGraph(); showModal('end-modal');
         }
+
         function drawGraph() {
             const cvs = document.getElementById('cps-graph'); const ctx = cvs.getContext('2d'); cvs.width = cvs.parentElement.clientWidth - 60; cvs.height = 150;
             let n = Math.max(Math.floor(duration * 2), 5); let bs = duration / n; let bins = new Array(n).fill(0);
@@ -398,7 +694,19 @@
             ctx.fillStyle = document.body.classList.contains('light-mode') ? "#121212" : "#fff";
             for (let i = 0; i < n; i++) { let x = (i/(n-1))*cvs.width; let y = cvs.height - ((arr[i]/mx)*(cvs.height-20)) - 10; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2); ctx.fill(); }
         }
-        function resetGame() { playSound('click'); hideModals(); isFinished = false; isPaused = false; clicks = 0; timeLeft = duration; document.getElementById("timer").innerText = `Time left: ${timeLeft.toFixed(1)}s`; document.getElementById("score-label").innerText = "Clicks: 0"; document.getElementById("cps-label").innerText = "CPS: 0.00"; clickBtn.innerText = "START"; clickBtn.style.backgroundColor = "var(--accent-main)"; document.getElementById("pause-btn").style.display = "none"; document.getElementById("pause-btn").innerText = "⏸ Pause"; updatePBDisplay(); }
+
+        function resetGame() { 
+            playSound('click'); hideModals(); isFinished = false; isPaused = false; clicks = 0; timeLeft = duration; 
+            document.getElementById("timer").innerText = `Time left: ${timeLeft.toFixed(1)}s`; 
+            document.getElementById("score-label").innerText = "Clicks: 0"; 
+            document.getElementById("cps-label").innerText = "CPS: 0.00"; 
+            clickBtn.innerText = "START"; clickBtn.style.backgroundColor = "var(--accent-main)"; 
+            document.getElementById("controls-row").style.display = "none"; 
+            document.getElementById("pause-btn").innerText = "⏸ Pause";
+            document.getElementById("pause-btn").style.display = "block";
+            document.getElementById("restart-main-btn").style.display = "none";
+            updatePBDisplay(); 
+        }
         
         function showLeaderboard() { 
             autoPauseCheck(); playSound('click'); 
@@ -411,29 +719,142 @@
             content.innerHTML = html; showModal('leaderboard-modal'); 
         }
         
-        function wipeLeaderboard() { if(confirm("Are you sure?")) { highScores = { "1.0": [], "3.0": [], "5.0": [], "10.0": [], "60.0": [], "custom": [] }; localStorage.setItem('cps_highscores', JSON.stringify(highScores)); updatePBDisplay(); hideModals(); playSound('boom'); triggerShake();} }
         function copyResults() { playSound('click'); let finalCPS = (clicks / duration).toFixed(2); let catName = currentCategory === "custom" ? "Custom" : `${currentCategory}s`; navigator.clipboard.writeText(`🎮 CPS Tester: ${finalCPS} CPS (${clicks} clicks in ${catName})!`); alert("Copied to clipboard!"); }
 
-        // --- MINIGAME ENGINE ---
-        let activeMinigameInterval = null; let activeMinigameTimeout = null; let smTimeouts = [];
-        
+        // --- RULES ENGINE ---
+        const mgRules = {
+            'target': "Tap the targets as fast as you can before time runs out. Every successful hit gives you a point!",
+            'react': "Wait for the red screen to turn green, then tap as quickly as possible. Don't tap too early or you'll have to restart!",
+            'sprint': "Tap the giant button exactly 100 times as fast as humanly possible. The lower your time, the better.",
+            'grid': "A random cell in the 3x3 grid will light up blue. Tap it quickly! See how many you can hit in 10 seconds.",
+            'minefield': "Tap the green circles to score points, but avoid the red bombs! Each point spawns more bombs. Hitting a bomb ends the game instantly.",
+            'juggler': "Keep the ball in the air! Tap it to bounce it upward. Gravity increases slightly over time. Don't let it hit the bottom!",
+            'simon': "Watch the sequence of flashing squares and repeat it back. The sequence gets one step longer each round. One mistake and it's game over!",
+            'versus': "Grab a friend! Place the device between you. \n\n⚔️ Classic: Tap your half faster than your opponent for 10s.\n🧵 Tug of War: Tap to pull the knot into your zone to win instantly!"
+        };
+
+        function showRules(game) {
+            playSound('click');
+            autoPauseCheck(); 
+            if (!currentMg && game !== 'versus') currentMg = game;
+            
+            let titles = {
+                'target': '🎯 Target Practice', 'react': '⚡ Reaction Time', 'sprint': '🏁 100-Click Sprint',
+                'grid': '🔲 Grid Mode', 'minefield': '💣 Minefield', 'juggler': '🤹 Keep It Up',
+                'simon': '🧠 Simon Says', 'versus': '👯 Versus Mode'
+            };
+            
+            document.getElementById('rules-title').innerText = titles[game] || "Rules";
+            document.getElementById('rules-text').innerText = mgRules[game] || "Have fun!";
+            
+            showModal('rules-modal');
+        }
+
+        // --- UNIVERSAL MINIGAME PAUSE/RESTART ENGINE ---
+        function toggleMgPause() {
+            if (!currentMg) return;
+            mgPaused = !mgPaused;
+            playSound(mgPaused ? 'bloop' : 'click');
+            
+            document.querySelectorAll('.mg-pause-btn').forEach(btn => {
+                btn.innerText = mgPaused ? "▶" : "⏸";
+                btn.style.backgroundColor = mgPaused ? "#555" : "";
+            });
+            document.querySelectorAll('.mg-restart-btn').forEach(btn => {
+                if (btn.id === `restart-${currentMg}`) {
+                    btn.style.display = mgPaused ? "block" : "none";
+                }
+            });
+            
+            if (currentMg === 'react' && reactState === 'wait') {
+                if (mgPaused) {
+                    clearTimeout(activeMinigameTimeout);
+                } else {
+                    activeMinigameTimeout = setTimeout(() => { 
+                        reactState = 'green'; 
+                        let area = document.getElementById('mg-react-area');
+                        area.style.backgroundColor = '#4CAF50'; 
+                        area.innerText = 'CLICK!'; 
+                        playSound('bloop'); 
+                        reactStart = performance.now(); 
+                    }, Math.random()*2000+1000);
+                }
+            }
+        }
+
+        function restartCurrentMg() {
+            playSound('click');
+            mgPaused = false;
+            document.querySelectorAll('.mg-pause-btn').forEach(b => { b.innerText="⏸"; b.style.backgroundColor=""; b.style.display="none"; });
+            document.querySelectorAll('.mg-restart-btn').forEach(b => b.style.display="none");
+            
+            clearInterval(activeMinigameInterval);
+            clearTimeout(activeMinigameTimeout);
+            if (smTimeouts) { smTimeouts.forEach(t=>clearTimeout(t)); smTimeouts = []; }
+
+            if (currentMg === 'target') { startTargetGame(); }
+            if (currentMg === 'react') { resetReactGame(); handleReactClick({type:'mousedown', preventDefault:()=>{}}); }
+            if (currentMg === 'sprint') { resetSprint(); handleSprintClick({type:'mousedown', preventDefault:()=>{}}); }
+            if (currentMg === 'grid') { document.getElementById('mg-grid-area').innerHTML=""; startGridGame(); }
+            if (currentMg === 'minefield') { document.getElementById('mf-area').innerHTML=""; startMinefield(); }
+            if (currentMg === 'juggler') { document.getElementById('jg-ball').style.display="none"; startJuggler(); }
+            if (currentMg === 'simon') { document.getElementById('sm-grid-area').innerHTML=""; startSimon(); }
+        }
+
         function openMinigameHub() { 
             autoPauseCheck(); playSound('click'); 
             let mgContent = document.getElementById('mg-modal-content');
             if (arcadeFS) mgContent.classList.add('fullscreen-mode');
             else mgContent.classList.remove('fullscreen-mode');
+            updateArcadeBestUI();
             showGame('menu'); showModal('minigame-modal'); 
         }
         
         function closeMinigames() { playSound('click'); backToHub(); hideModals(); }
-        function backToHub() { playSound('click'); clearInterval(activeMinigameInterval); clearTimeout(activeMinigameTimeout); smTimeouts.forEach(t=>clearTimeout(t)); showGame('menu'); }
-        function showGame(gameId) { playSound('click'); document.querySelectorAll('.game-screen').forEach(el => el.style.display = 'none'); document.getElementById(`mg-${gameId}-screen`).style.display = "block"; setupGameUI(gameId); }
+        
+        // --------------------------------------------------------------------------
+        // BULLETPROOF BACK BUTTON LOGIC
+        // --------------------------------------------------------------------------
+        window.backToHub = function() { 
+            try { playSound('click'); } catch(e) {}
+            try { clearInterval(activeMinigameInterval); } catch(e) {}
+            try { clearTimeout(activeMinigameTimeout); } catch(e) {}
+            try { if (Array.isArray(smTimeouts)) { smTimeouts.forEach(t=>clearTimeout(t)); smTimeouts = []; } } catch(e) {}
+            
+            // Hard reset all game logic states
+            mgPaused = false;
+            tgRun = false; spRun = false; grRun = false; mfRun = false; jgRun = false; smRun = false;
+
+            // Reset UI components to safe defaults
+            try {
+                document.querySelectorAll('.mg-pause-btn').forEach(b => { b.innerText="⏸"; b.style.backgroundColor=""; b.style.display="none"; });
+                document.querySelectorAll('.mg-restart-btn').forEach(b => b.style.display="none");
+            } catch(e) {}
+
+            try { updateArcadeBestUI(); } catch(e) {}
+            
+            currentMg = null;
+            try {
+                document.querySelectorAll('.game-screen').forEach(el => el.style.display = 'none'); 
+                document.getElementById('mg-menu-screen').style.display = "block"; 
+            } catch(e) {}
+        }
+
+        function showGame(gameId) { 
+            playSound('click'); 
+            currentMg = gameId !== 'menu' ? gameId : null;
+            document.querySelectorAll('.game-screen').forEach(el => el.style.display = 'none'); 
+            document.getElementById(`mg-${gameId}-screen`).style.display = "block"; 
+            setupGameUI(gameId); 
+        }
         
         function setupGameUI(g) {
             if(g === 'react') resetReactGame(); 
             if(g === 'sprint') resetSprint();
             
-            // Render PREVIEW states for all games so players know what to expect
+            document.querySelectorAll('.mg-pause-btn, .mg-restart-btn').forEach(b => b.style.display = 'none');
+            
+            // Render PREVIEW states
             if(g === 'target') { 
                 document.getElementById('tg-start-btn').style.display = "block";
                 document.getElementById('tg-start-btn').innerText = "START";
@@ -485,60 +906,213 @@
         }
 
         // 1. TARGET PRACTICE
-        let tgTime = 10.0, tgHits = 0, tgRun = false;
-        function startTargetGame() { playSound('bloop'); tgTime = 10.0; tgHits = 0; tgRun = true; document.getElementById('tg-start-btn').style.display = "none"; document.getElementById('tg-final').style.display = "none"; document.getElementById('tg-timer-label').innerText = "Time: 10.0s"; document.getElementById('tg-score-label').innerText = "Hits: 0"; document.getElementById('mg-target').style.display = "block"; moveTarget(); activeMinigameInterval = setInterval(() => { tgTime -= 0.05; if(tgTime <= 0){ tgTime = 0; tgRun = false; clearInterval(activeMinigameInterval); document.getElementById('mg-target').style.display = "none"; document.getElementById('tg-start-btn').style.display = "block"; document.getElementById('tg-start-btn').innerText = "PLAY AGAIN"; document.getElementById('tg-final').innerText = `Final Score: ${tgHits} Hits!`; document.getElementById('tg-final').style.display = "block"; playSound('bloop');} document.getElementById('tg-timer-label').innerText = `Time: ${tgTime.toFixed(1)}s`; }, 50); }
+        let tgTime = 10.0, tgHits = 0;
+        function startTargetGame() { playSound('bloop'); tgTime = 10.0; tgHits = 0; tgRun = true; document.getElementById('tg-start-btn').style.display = "none"; document.getElementById('tg-final').style.display = "none"; document.getElementById('pause-target').style.display = "block"; document.getElementById('restart-target').style.display = "none"; document.getElementById('tg-timer-label').innerText = "Time: 10.0s"; document.getElementById('tg-score-label').innerText = "Hits: 0"; document.getElementById('mg-target').style.display = "block"; moveTarget(); activeMinigameInterval = setInterval(() => { if (mgPaused) return; tgTime -= 0.05; if(tgTime <= 0){ tgTime = 0; tgRun = false; clearInterval(activeMinigameInterval); document.getElementById('pause-target').style.display = "none"; document.getElementById('restart-target').style.display = "none"; document.getElementById('mg-target').style.display = "none"; document.getElementById('tg-start-btn').style.display = "block"; document.getElementById('tg-start-btn').innerText = "PLAY AGAIN"; document.getElementById('tg-final').innerText = `Final Score: ${tgHits} Hits!`; document.getElementById('tg-final').style.display = "block"; if (tgHits > (Number(arcadeScores.target)||0)) { saveStateForUndo(); arcadeScores.target = tgHits; saveArcadeScores(); playSound('victory'); spawnConfetti(); } else { playSound('bloop'); } } document.getElementById('tg-timer-label').innerText = `Time: ${tgTime.toFixed(1)}s`; }, 50); }
         function moveTarget() { const tg = document.getElementById('mg-target'); const area = document.getElementById('mg-target-area'); tg.style.left = `${Math.floor(Math.random()*(area.clientWidth-50))}px`; tg.style.top = `${Math.floor(Math.random()*(area.clientHeight-50))}px`; }
-        function hitTarget(e) { if(e.type === 'touchstart') e.preventDefault(); if(!tgRun) return; tgHits++; document.getElementById('tg-score-label').innerText = `Hits: ${tgHits}`; moveTarget(); playSound('bloop'); if(navigator.vibrate) navigator.vibrate(10); }
+        function hitTarget(e) { if(e.type === 'touchstart') e.preventDefault(); if (mgPaused) { toggleMgPause(); return; } if(!tgRun) return; tgHits++; document.getElementById('tg-score-label').innerText = `Hits: ${tgHits}`; moveTarget(); playSound('bloop'); if(navigator.vibrate) navigator.vibrate(10); }
 
         // 2. REACTION TIME
         let reactState = 'idle', reactStart = 0;
-        function resetReactGame() { reactState = 'idle'; clearTimeout(activeMinigameTimeout); document.getElementById('mg-react-area').style.backgroundColor = '#555'; document.getElementById('mg-react-area').innerText = 'Click to Start'; }
-        function handleReactClick(e) { if(e.type === 'touchstart') e.preventDefault(); let area = document.getElementById('mg-react-area'); if(reactState === 'idle') { playSound('click'); reactState = 'wait'; area.style.backgroundColor = '#E53935'; area.innerText = 'Wait for green...'; activeMinigameTimeout = setTimeout(() => { reactState = 'green'; area.style.backgroundColor = '#4CAF50'; area.innerText = 'CLICK!'; playSound('bloop'); reactStart = performance.now(); }, Math.random()*3000+2000); } else if(reactState === 'wait') { playSound('boom'); clearTimeout(activeMinigameTimeout); reactState = 'idle'; area.style.backgroundColor = '#333'; area.innerText = 'Too early! Click to try again.'; triggerShake(); } else if(reactState === 'green') { let r = performance.now() - reactStart; reactState = 'idle'; area.style.backgroundColor = 'var(--accent-main)'; area.innerText = `${r.toFixed(0)} ms! Click to go again.`; playSound('victory'); if(navigator.vibrate) navigator.vibrate(10); } }
+        function resetReactGame() { reactState = 'idle'; clearTimeout(activeMinigameTimeout); document.getElementById('mg-react-area').style.backgroundColor = '#555'; document.getElementById('mg-react-area').innerText = 'Click to Start'; document.getElementById('pause-react').style.display = 'none'; document.getElementById('restart-react').style.display = 'none'; }
+        function handleReactClick(e) { 
+            if(e.type === 'touchstart') e.preventDefault(); 
+            if (mgPaused) { toggleMgPause(); return; }
+            let area = document.getElementById('mg-react-area'); 
+            if(reactState === 'idle') { 
+                playSound('click'); reactState = 'wait'; area.style.backgroundColor = '#E53935'; area.innerText = 'Wait for green...'; 
+                document.getElementById('pause-react').style.display = 'block'; document.getElementById('restart-react').style.display = 'none';
+                activeMinigameTimeout = setTimeout(() => { reactState = 'green'; area.style.backgroundColor = '#4CAF50'; area.innerText = 'CLICK!'; playSound('bloop'); reactStart = performance.now(); }, Math.random()*3000+2000); 
+            } else if(reactState === 'wait') { 
+                playSound('boom'); clearTimeout(activeMinigameTimeout); reactState = 'idle'; area.style.backgroundColor = '#333'; area.innerText = 'Too early! Click to try again.'; triggerShake(); 
+                document.getElementById('pause-react').style.display = 'none'; document.getElementById('restart-react').style.display = 'none';
+            } else if(reactState === 'green') { 
+                let r = performance.now() - reactStart; reactState = 'idle'; area.style.backgroundColor = 'var(--accent-main)'; area.innerText = `${r.toFixed(0)} ms! Click to go again.`; 
+                document.getElementById('pause-react').style.display = 'none'; document.getElementById('restart-react').style.display = 'none';
+                let currentBest = Number(arcadeScores.react) || 99999;
+                if (r < currentBest) { saveStateForUndo(); arcadeScores.react = r; saveArcadeScores(); playSound('victory'); spawnConfetti(); } else { playSound('bloop'); } if(navigator.vibrate) navigator.vibrate(10); 
+            } 
+        }
 
         // 3. 100-CLICK SPRINT
-        let spClicks = 0, spTime = 0, spRun = false;
-        function resetSprint() { spClicks = 0; spTime = 0; spRun = false; clearInterval(activeMinigameInterval); document.getElementById('sp-timer-label').innerText = "Time: 0.00s"; document.getElementById('sp-score-label').innerText = "0 / 100"; document.getElementById('mg-sprint-btn').innerText = "START"; document.getElementById('mg-sprint-btn').style.display = "block"; document.getElementById('sp-final').style.display = "none"; document.getElementById('sp-reset-btn').style.display = "none"; }
-        function handleSprintClick(e) { if(e.type === 'touchstart') e.preventDefault(); if(navigator.vibrate) navigator.vibrate(10); playSound('click'); if(!spRun && spClicks === 0) { spRun = true; activeMinigameInterval = setInterval(() => { spTime += 0.05; document.getElementById('sp-timer-label').innerText = `Time: ${spTime.toFixed(2)}s`; }, 50); } if(spRun) { spClicks++; document.getElementById('sp-score-label').innerText = `${spClicks} / 100`; document.getElementById('mg-sprint-btn').innerText = spClicks; if(spClicks >= 100) { spRun = false; clearInterval(activeMinigameInterval); document.getElementById('mg-sprint-btn').style.display = "none"; document.getElementById('sp-final').innerText = `Final Time: ${spTime.toFixed(2)}s!`; document.getElementById('sp-final').style.display = "block"; document.getElementById('sp-reset-btn').style.display = "block"; playSound('victory'); spawnConfetti();} } }
+        let spClicks = 0, spTime = 0;
+        function resetSprint() { spClicks = 0; spTime = 0; spRun = false; clearInterval(activeMinigameInterval); document.getElementById('sp-timer-label').innerText = "Time: 0.00s"; document.getElementById('sp-score-label').innerText = "0 / 100"; document.getElementById('mg-sprint-btn').innerText = "START"; document.getElementById('mg-sprint-btn').style.display = "block"; document.getElementById('sp-final').style.display = "none"; document.getElementById('sp-reset-btn').style.display = "none"; document.getElementById('pause-sprint').style.display = 'none'; document.getElementById('restart-sprint').style.display = 'none'; }
+        function handleSprintClick(e) { 
+            if(e.type === 'touchstart') e.preventDefault(); 
+            if (mgPaused) { toggleMgPause(); return; }
+            if(navigator.vibrate) navigator.vibrate(10); playSound('click'); 
+            if(!spRun && spClicks === 0) { 
+                spRun = true; 
+                document.getElementById('pause-sprint').style.display = 'block'; document.getElementById('restart-sprint').style.display = 'none';
+                activeMinigameInterval = setInterval(() => { if (mgPaused) return; spTime += 0.05; document.getElementById('sp-timer-label').innerText = `Time: ${spTime.toFixed(2)}s`; }, 50); 
+            } 
+            if(spRun) { 
+                spClicks++; document.getElementById('sp-score-label').innerText = `${spClicks} / 100`; document.getElementById('mg-sprint-btn').innerText = spClicks; 
+                if(spClicks >= 100) { 
+                    spRun = false; clearInterval(activeMinigameInterval); document.getElementById('mg-sprint-btn').style.display = "none"; document.getElementById('sp-final').innerText = `Final Time: ${spTime.toFixed(2)}s!`; document.getElementById('sp-final').style.display = "block"; document.getElementById('sp-reset-btn').style.display = "block"; 
+                    document.getElementById('pause-sprint').style.display = 'none'; document.getElementById('restart-sprint').style.display = 'none';
+                    let currentBest = Number(arcadeScores.sprint) || 99999;
+                    if (spTime < currentBest) { saveStateForUndo(); arcadeScores.sprint = spTime; saveArcadeScores(); playSound('victory'); spawnConfetti(); } else { playSound('bloop'); } 
+                } 
+            } 
+        }
 
         // 4. GRID MODE
-        let grScore = 0, grTime = 10.0, grRun = false, grAct = -1;
-        function startGridGame() { playSound('bloop'); const area = document.getElementById('mg-grid-area'); area.innerHTML=""; for(let i=0;i<9;i++){ let c=document.createElement('div'); c.className="grid-cell"; c.id=`gr-${i}`; c.onmousedown=(e)=>clickGrid(e,i); c.ontouchstart=(e)=>clickGrid(e,i); area.appendChild(c); } grScore=0; grTime=10.0; grRun=true; document.getElementById('gr-start-btn').style.display="none"; document.getElementById('gr-final').style.display="none"; document.getElementById('gr-timer-label').innerText="Time: 10.0s"; document.getElementById('gr-score-label').innerText="Score: 0"; lightGrid(); activeMinigameInterval=setInterval(()=>{ grTime-=0.1; if(grTime<=0){ grTime=0; grRun=false; clearInterval(activeMinigameInterval); if(grAct!==-1)document.getElementById(`gr-${grAct}`).classList.remove('active'); document.getElementById('gr-start-btn').style.display="block"; document.getElementById('gr-start-btn').innerText="PLAY AGAIN"; document.getElementById('gr-final').innerText=`Final Score: ${grScore}!`; document.getElementById('gr-final').style.display="block"; playSound('bloop');} document.getElementById('gr-timer-label').innerText=`Time: ${grTime.toFixed(1)}s`; },100); }
+        let grScore = 0, grTime = 10.0, grAct = -1;
+        function startGridGame() { playSound('bloop'); const area = document.getElementById('mg-grid-area'); area.innerHTML=""; for(let i=0;i<9;i++){ let c=document.createElement('div'); c.className="grid-cell"; c.id=`gr-${i}`; c.onmousedown=(e)=>clickGrid(e,i); c.ontouchstart=(e)=>clickGrid(e,i); area.appendChild(c); } grScore=0; grTime=10.0; grRun=true; document.getElementById('gr-start-btn').style.display="none"; document.getElementById('gr-final').style.display="none"; document.getElementById('gr-timer-label').innerText="Time: 10.0s"; document.getElementById('gr-score-label').innerText="Score: 0"; lightGrid(); document.getElementById('pause-grid').style.display = 'block'; document.getElementById('restart-grid').style.display = 'none'; activeMinigameInterval=setInterval(()=>{ if (mgPaused) return; grTime-=0.1; if(grTime<=0){ grTime=0; grRun=false; clearInterval(activeMinigameInterval); if(grAct!==-1)document.getElementById(`gr-${grAct}`).classList.remove('active'); document.getElementById('gr-start-btn').style.display="block"; document.getElementById('gr-start-btn').innerText="PLAY AGAIN"; document.getElementById('gr-final').innerText=`Final Score: ${grScore}!`; document.getElementById('gr-final').style.display="block"; document.getElementById('pause-grid').style.display = 'none'; document.getElementById('restart-grid').style.display = 'none'; if (grScore > (Number(arcadeScores.grid)||0)) { saveStateForUndo(); arcadeScores.grid = grScore; saveArcadeScores(); playSound('victory'); spawnConfetti(); } else { playSound('bloop'); } } document.getElementById('gr-timer-label').innerText=`Time: ${grTime.toFixed(1)}s`; },100); }
         function lightGrid() { if(grAct!==-1)document.getElementById(`gr-${grAct}`).classList.remove('active'); let n=Math.floor(Math.random()*9); while(n===grAct) n=Math.floor(Math.random()*9); grAct=n; document.getElementById(`gr-${grAct}`).classList.add('active'); }
-        function clickGrid(e, i) { if(e.type === 'touchstart') e.preventDefault(); if(!grRun) return; if(i === grAct) { grScore++; document.getElementById('gr-score-label').innerText=`Score: ${grScore}`; if(navigator.vibrate) navigator.vibrate(10); playSound('click'); lightGrid(); } }
+        function clickGrid(e, i) { if(e.type === 'touchstart') e.preventDefault(); if (mgPaused) { toggleMgPause(); return; } if(!grRun) return; if(i === grAct) { grScore++; document.getElementById('gr-score-label').innerText=`Score: ${grScore}`; if(navigator.vibrate) navigator.vibrate(10); playSound('click'); lightGrid(); } }
 
         // 5. MINEFIELD
-        let mfTime = 10.0, mfScore = 0, mfRun = false;
-        function startMinefield() { playSound('bloop'); mfTime = 10.0; mfScore = 0; mfRun = true; document.getElementById('mf-start-btn').style.display = "none"; document.getElementById('mf-final').style.display = "none"; document.getElementById('mf-timer-label').innerText = "Time: 10.0s"; document.getElementById('mf-score-label').innerText = "Score: 0"; spawnMf(); activeMinigameInterval = setInterval(()=>{ mfTime-=0.1; if(mfTime<=0){ mfTime=0; endMf(`Time's Up! Score: ${mfScore}`); } document.getElementById('mf-timer-label').innerText=`Time: ${mfTime.toFixed(1)}s`; }, 100); }
+        let mfTime = 10.0, mfScore = 0;
+        function startMinefield() { playSound('bloop'); mfTime = 10.0; mfScore = 0; mfRun = true; document.getElementById('mf-start-btn').style.display = "none"; document.getElementById('mf-final').style.display = "none"; document.getElementById('mf-timer-label').innerText = "Time: 10.0s"; document.getElementById('mf-score-label').innerText = "Score: 0"; spawnMf(); document.getElementById('pause-minefield').style.display = 'block'; document.getElementById('restart-minefield').style.display = 'none'; activeMinigameInterval = setInterval(()=>{ if(mgPaused) return; mfTime-=0.1; if(mfTime<=0){ mfTime=0; endMf(`Time's Up! Score: ${mfScore}`); } document.getElementById('mf-timer-label').innerText=`Time: ${mfTime.toFixed(1)}s`; }, 100); }
         function spawnMf() { const area = document.getElementById('mf-area'); area.querySelectorAll('.mf-targ, .mf-bomb').forEach(e=>e.remove()); let mx = area.clientWidth-45; let my = area.clientHeight-45; let g=document.createElement('div'); g.className='mf-targ'; g.style.left=Math.random()*mx+'px'; g.style.top=Math.random()*my+'px'; g.onmousedown=tapMf; g.ontouchstart=tapMf; area.appendChild(g); let bombs = 1 + Math.floor(mfScore/5); for(let i=0;i<bombs;i++){ let b=document.createElement('div'); b.className='mf-bomb'; b.style.left=Math.random()*mx+'px'; b.style.top=Math.random()*my+'px'; b.onmousedown=dieMf; b.ontouchstart=dieMf; area.appendChild(b); } }
-        function tapMf(e){ if(e.type==='touchstart') e.preventDefault(); if(!mfRun) return; mfScore++; document.getElementById('mf-score-label').innerText=`Score: ${mfScore}`; playSound('click'); if(navigator.vibrate) navigator.vibrate(10); spawnMf(); }
-        function dieMf(e){ if(e.type==='touchstart') e.preventDefault(); if(!mfRun) return; if(navigator.vibrate) navigator.vibrate(50); triggerShake(); playSound('boom'); endMf(`💥 KABOOM! Final Score: ${mfScore}`); }
-        function endMf(msg) { mfRun = false; clearInterval(activeMinigameInterval); document.getElementById('mf-start-btn').style.display = "block"; document.getElementById('mf-start-btn').innerText = "TRY AGAIN"; document.getElementById('mf-final').innerText = msg; document.getElementById('mf-final').style.display = "block"; }
+        function tapMf(e){ if(e.type==='touchstart') e.preventDefault(); if (mgPaused) { toggleMgPause(); return; } if(!mfRun) return; mfScore++; document.getElementById('mf-score-label').innerText=`Score: ${mfScore}`; playSound('click'); if(navigator.vibrate) navigator.vibrate(10); spawnMf(); }
+        function dieMf(e){ if(e.type==='touchstart') e.preventDefault(); if (mgPaused) { toggleMgPause(); return; } if(!mfRun) return; if(navigator.vibrate) navigator.vibrate(50); triggerShake(); playSound('boom'); endMf(`💥 KABOOM! Final Score: ${mfScore}`); }
+        function endMf(msg) { mfRun = false; clearInterval(activeMinigameInterval); document.getElementById('pause-minefield').style.display = 'none'; document.getElementById('restart-minefield').style.display = 'none'; document.getElementById('mf-start-btn').style.display = "block"; document.getElementById('mf-start-btn').innerText = "TRY AGAIN"; document.getElementById('mf-final').innerText = msg; document.getElementById('mf-final').style.display = "block"; if (mfScore > (Number(arcadeScores.minefield)||0)) { saveStateForUndo(); arcadeScores.minefield = mfScore; saveArcadeScores(); playSound('victory'); spawnConfetti(); } }
 
         // 6. KEEP IT UP (JUGGLER)
-        let jgScore = 0, jgRun = false, jgY = 0, jgVel = 0;
-        function startJuggler() { playSound('bloop'); jgScore = 0; jgRun = true; jgY = 20; jgVel = 0; document.getElementById('jg-start-btn').style.display = "none"; document.getElementById('jg-final').style.display = "none"; document.getElementById('jg-score-label').innerText = "Juggles: 0"; const ball = document.getElementById('jg-ball'); ball.style.display = "block"; const area = document.getElementById('jg-area'); let maxY = area.clientHeight - 60; activeMinigameInterval = setInterval(()=>{ jgVel += 0.5; jgY += jgVel; if(jgY > maxY) { jgY = maxY; endJuggler(); } ball.style.top = `${jgY}px`; }, 20); }
-        function tapJuggler(e) { if(e.type==='touchstart') e.preventDefault(); if(!jgRun) return; jgVel = -9; jgScore++; document.getElementById('jg-score-label').innerText = `Juggles: ${jgScore}`; playSound('bloop'); if(navigator.vibrate) navigator.vibrate(10); }
-        function endJuggler() { jgRun = false; clearInterval(activeMinigameInterval); triggerShake(); playSound('boom'); document.getElementById('jg-ball').style.display = "none"; document.getElementById('jg-start-btn').style.display = "block"; document.getElementById('jg-start-btn').innerText = "PLAY AGAIN"; document.getElementById('jg-final').innerText = `Dropped it! Score: ${jgScore}`; document.getElementById('jg-final').style.display = "block"; }
+        let jgScore = 0, jgY = 0, jgVel = 0;
+        function startJuggler() { playSound('bloop'); jgScore = 0; jgRun = true; jgY = 20; jgVel = 0; document.getElementById('jg-start-btn').style.display = "none"; document.getElementById('jg-final').style.display = "none"; document.getElementById('jg-score-label').innerText = "Juggles: 0"; const ball = document.getElementById('jg-ball'); ball.style.display = "block"; const area = document.getElementById('jg-area'); let maxY = area.clientHeight - 60; document.getElementById('pause-juggler').style.display = 'block'; document.getElementById('restart-juggler').style.display = 'none'; activeMinigameInterval = setInterval(()=>{ if(mgPaused) return; jgVel += 0.5; jgY += jgVel; if(jgY > maxY) { jgY = maxY; endJuggler(); } ball.style.top = `${jgY}px`; }, 20); }
+        function tapJuggler(e) { if(e.type==='touchstart') e.preventDefault(); if (mgPaused) { toggleMgPause(); return; } if(!jgRun) return; jgVel = -9; jgScore++; document.getElementById('jg-score-label').innerText = `Juggles: ${jgScore}`; playSound('bloop'); if(navigator.vibrate) navigator.vibrate(10); }
+        function endJuggler() { jgRun = false; clearInterval(activeMinigameInterval); triggerShake(); playSound('boom'); document.getElementById('pause-juggler').style.display = 'none'; document.getElementById('restart-juggler').style.display = 'none'; document.getElementById('jg-ball').style.display = "none"; document.getElementById('jg-start-btn').style.display = "block"; document.getElementById('jg-start-btn').innerText = "PLAY AGAIN"; document.getElementById('jg-final').innerText = `Dropped it! Score: ${jgScore}`; document.getElementById('jg-final').style.display = "block"; if (jgScore > (Number(arcadeScores.juggler)||0)) { saveStateForUndo(); arcadeScores.juggler = jgScore; saveArcadeScores(); playSound('victory'); spawnConfetti(); } }
 
         // 7. SIMON SAYS
-        let smSeq = [], smIdx = 0, smRun = false, smReady = false;
-        function startSimon() { playSound('bloop'); smSeq = []; smRun = true; document.getElementById('sm-start-btn').style.display = "none"; document.getElementById('sm-final').style.display = "none"; const area = document.getElementById('sm-grid-area'); area.innerHTML=""; for(let i=0;i<9;i++){ let c=document.createElement('div'); c.className="grid-cell sm-cell"; c.id=`sm-${i}`; c.onmousedown=(e)=>tapSimon(e,i); c.ontouchstart=(e)=>tapSimon(e,i); area.appendChild(c); } nextSimon(); }
+        let smSeq = [], smIdx = 0, smReady = false;
+        function startSimon() { playSound('bloop'); smSeq = []; smRun = true; document.getElementById('sm-start-btn').style.display = "none"; document.getElementById('sm-final').style.display = "none"; const area = document.getElementById('sm-grid-area'); area.innerHTML=""; for(let i=0;i<9;i++){ let c=document.createElement('div'); c.className="grid-cell sm-cell"; c.id=`sm-${i}`; c.onmousedown=(e)=>tapSimon(e,i); c.ontouchstart=(e)=>tapSimon(e,i); area.appendChild(c); } document.getElementById('pause-simon').style.display = 'block'; document.getElementById('restart-simon').style.display = 'none'; nextSimon(); }
         function nextSimon() { smReady = false; smIdx = 0; smSeq.push(Math.floor(Math.random()*9)); document.getElementById('sm-score-label').innerText = `Level: ${smSeq.length}`; document.getElementById('sm-status').innerText = "Watch closely..."; let delay = 500; smSeq.forEach((c, i) => { smTimeouts.push(setTimeout(() => flashSm(c), delay + (i * 600))); }); smTimeouts.push(setTimeout(() => { smReady = true; document.getElementById('sm-status').innerText = "Your turn!"; }, delay + (smSeq.length * 600))); }
         function flashSm(i) { let c = document.getElementById(`sm-${i}`); c.classList.add('flash'); playSound('click'); setTimeout(()=>c.classList.remove('flash'), 300); }
-        function tapSimon(e, i) { if(e.type==='touchstart') e.preventDefault(); if(!smRun || !smReady) return; flashSm(i); if(navigator.vibrate) navigator.vibrate(10); if(i === smSeq[smIdx]) { smIdx++; if(smIdx === smSeq.length) { smReady = false; playSound('victory'); smTimeouts.push(setTimeout(nextSimon, 1000)); document.getElementById('sm-status').innerText = "Correct!"; } } else { smRun = false; document.getElementById('sm-status').innerText = "Game Over!"; document.getElementById('sm-start-btn').style.display = "block"; document.getElementById('sm-start-btn').innerText = "TRY AGAIN"; document.getElementById('sm-final').innerText = `You reached Level ${smSeq.length}!`; document.getElementById('sm-final').style.display = "block"; triggerShake(); playSound('boom');} }
+        function tapSimon(e, i) { if(e.type==='touchstart') e.preventDefault(); if (mgPaused) { toggleMgPause(); return; } if(!smRun || !smReady) return; flashSm(i); if(navigator.vibrate) navigator.vibrate(10); if(i === smSeq[smIdx]) { smIdx++; if(smIdx === smSeq.length) { smReady = false; playSound('victory'); smTimeouts.push(setTimeout(nextSimon, 1000)); document.getElementById('sm-status').innerText = "Correct!"; } } else { smRun = false; document.getElementById('sm-status').innerText = "Game Over!"; document.getElementById('pause-simon').style.display = 'none'; document.getElementById('restart-simon').style.display = 'none'; document.getElementById('sm-start-btn').style.display = "block"; document.getElementById('sm-start-btn').innerText = "TRY AGAIN"; document.getElementById('sm-final').innerText = `You reached Level ${smSeq.length}!`; document.getElementById('sm-final').style.display = "block"; triggerShake(); playSound('boom'); if (smSeq.length > (Number(arcadeScores.simon)||1)) { saveStateForUndo(); arcadeScores.simon = smSeq.length; saveArcadeScores(); playSound('victory'); spawnConfetti(); } } }
 
-        // --- 2-PLAYER VERSUS ---
-        let vsMode = 'classic', vsActive = false, vsCount = 3, vsTime = 10, p1 = 0, p2 = 0, tug = 50, vsInt;
-        function startVersus(mode) { playSound('bloop'); vsMode = mode; hideModals(); document.getElementById('vs-container').style.display = "flex"; document.getElementById('vs-timer').style.display = "block"; document.getElementById('vs-timer').innerText = "READY"; p1 = 0; p2 = 0; tug = 50; document.getElementById('vs-score-p1').innerText = "0"; document.getElementById('vs-score-p2').innerText = "0"; if (mode === 'tug') { document.getElementById('vs-rope-container').style.display = "block"; document.getElementById('vs-knot').style.top = "50%"; document.getElementById('vs-score-p1').style.display = "none"; document.getElementById('vs-score-p2').style.display = "none"; document.getElementById('vs-label-p1').style.display = "none"; document.getElementById('vs-label-p2').style.display = "none"; } else { document.getElementById('vs-rope-container').style.display = "none"; document.getElementById('vs-score-p1').style.display = "block"; document.getElementById('vs-score-p2').style.display = "block"; document.getElementById('vs-label-p1').style.display = "block"; document.getElementById('vs-label-p2').style.display = "block"; document.getElementById('vs-label-p1').innerText = "PLAYER 1"; document.getElementById('vs-label-p2').innerText = "PLAYER 2"; } vsCount = 3; vsActive = false; let preTimer = setInterval(() => { playSound('click'); document.getElementById('vs-timer').innerText = vsCount; vsCount--; if(vsCount < 0) { clearInterval(preTimer); if(mode === 'classic') { document.getElementById('vs-timer').innerText = "10.0"; vsTime = 10.0; playSound('bloop'); vsInt = setInterval(()=>{vsTime-=0.1; document.getElementById('vs-timer').innerText = vsTime.toFixed(1); if(vsTime<=0){ clearInterval(vsInt); vsActive=false; document.getElementById('vs-timer').innerText = p1>p2?"P1 WINS!":p2>p1?"P2 WINS!":"TIE!"; playSound('victory'); spawnConfetti();}},100); } else { document.getElementById('vs-timer').style.display = "none"; playSound('bloop'); } vsActive = true; } }, 1000); }
-        function vsClick(pl, e) { if(e.type==='touchstart') e.preventDefault(); if(!vsActive) return; if(navigator.vibrate) navigator.vibrate(15); playSound('click'); if(vsMode === 'classic') { if(pl===1){p1++; document.getElementById('vs-score-p1').innerText = p1; } else {p2++; document.getElementById('vs-score-p2').innerText = p2; } } else { if(pl===1) tug-=1.5; else tug+=1.5; document.getElementById('vs-knot').style.top=`${tug}%`; if(tug<=15){ vsActive=false; document.getElementById('vs-timer').style.display="block"; document.getElementById('vs-timer').innerText="P1 WINS!"; playSound('victory'); spawnConfetti();} else if(tug>=85){ vsActive=false; document.getElementById('vs-timer').style.display="block"; document.getElementById('vs-timer').innerText="P2 WINS!"; playSound('victory'); spawnConfetti();} } }
-        function exitVersus() { playSound('click'); clearInterval(vsInt); vsActive = false; document.getElementById('vs-container').style.display = "none"; openMinigameHub(); }
+        // --- 2-PLAYER VERSUS W/ DOMINATION EFFECT & SCORE TRACKING ---
+        let vsMode = 'classic', vsActive = false, vsCount = 3, vsTime = 10, p1 = 0, p2 = 0, tug = 50, vsInt, vsPreTimer;
+        
+        function endVersus(winner) {
+            vsActive = false;
+            triggerBigShake();
+            playSound('victory');
+            document.getElementById('vs-timer').style.display = "block";
+            
+            let area1 = document.getElementById('vs-area-p1');
+            let area2 = document.getElementById('vs-area-p2');
 
-        // MODAL UTILS
+            // Only show tap counts in classic mode
+            let stats = "";
+            if (vsMode === 'classic') {
+                stats = `<br><span style="font-size: 18px; color: #ddd; font-weight: normal; text-shadow: 0 2px 5px rgba(0,0,0,0.8);">Red: ${p1} Taps | Blue: ${p2} Taps</span>`;
+            }
+
+            if (winner === 1) {
+                document.getElementById('vs-timer').innerHTML = "RED WINS!" + stats;
+                area1.style.height = "100%"; area2.style.height = "0%";
+                spawnConfetti(['#E53935', '#ff5252', '#b71c1c'], 300);
+            } else if (winner === 2) {
+                document.getElementById('vs-timer').innerHTML = "BLUE WINS!" + stats;
+                area2.style.height = "100%"; area1.style.height = "0%";
+                spawnConfetti(['#2196F3', '#64b5f6', '#0d47a1'], 300);
+            } else {
+                document.getElementById('vs-timer').innerHTML = "TIE!" + stats;
+                spawnConfetti(null, 300); 
+            }
+        }
+
+        function startVersus(mode) { 
+            playSound('bloop'); vsMode = mode; hideModals(); 
+            
+            // Instantly repair UI layout if playing again
+            document.getElementById('vs-area-p1').style.height = "50%";
+            document.getElementById('vs-area-p2').style.height = "50%";
+            document.getElementById('vs-container').style.display = "flex"; 
+            document.getElementById('vs-timer').style.display = "block"; 
+            document.getElementById('vs-timer').innerText = "READY"; 
+            
+            p1 = 0; p2 = 0; tug = 50; 
+            
+            if (mode === 'tug') { 
+                document.getElementById('vs-rope-container').style.display = "block"; 
+                document.getElementById('vs-knot').style.top = "50%"; 
+                document.getElementById('vs-score-p1').style.display = "none"; 
+                document.getElementById('vs-score-p2').style.display = "none"; 
+            } else { 
+                document.getElementById('vs-rope-container').style.display = "none"; 
+                document.getElementById('vs-score-p1').style.display = "block"; 
+                document.getElementById('vs-score-p2').style.display = "block"; 
+                document.getElementById('vs-score-p1').innerText = "0"; 
+                document.getElementById('vs-score-p2').innerText = "0"; 
+            } 
+            
+            vsCount = 3; vsActive = false; 
+            clearInterval(vsPreTimer);
+            vsPreTimer = setInterval(() => { 
+                playSound('click'); 
+                document.getElementById('vs-timer').innerText = vsCount; 
+                vsCount--; 
+                
+                if(vsCount < 0) { 
+                    clearInterval(vsPreTimer); 
+                    if(mode === 'classic') { 
+                        document.getElementById('vs-timer').innerText = "10.0"; 
+                        vsTime = 10.0; playSound('bloop'); 
+                        vsInt = setInterval(()=>{
+                            vsTime-=0.1; document.getElementById('vs-timer').innerText = vsTime.toFixed(1); 
+                            if(vsTime<=0){ 
+                                clearInterval(vsInt); 
+                                if(p1>p2) endVersus(1); else if(p2>p1) endVersus(2); else endVersus(0);
+                            }
+                        },100); 
+                    } else { 
+                        document.getElementById('vs-timer').style.display = "none"; 
+                        playSound('bloop'); 
+                    } 
+                    vsActive = true; 
+                } 
+            }, 1000); 
+        }
+
+        function vsClick(pl, e) { 
+            if(e.type==='touchstart') e.preventDefault(); 
+            if(!vsActive) return; 
+            
+            if(navigator.vibrate) navigator.vibrate(15); 
+            playSound('click'); 
+            
+            if(pl===1) p1++; else p2++;
+            
+            if(vsMode === 'classic') { 
+                if(pl===1) { document.getElementById('vs-score-p1').innerText = p1; } 
+                else { document.getElementById('vs-score-p2').innerText = p2; } 
+            } else { 
+                if(pl===1) tug-=1.5; else tug+=1.5; 
+                document.getElementById('vs-knot').style.top=`${tug}%`; 
+                if(tug<=15){ endVersus(1); } 
+                else if(tug>=85){ endVersus(2); } 
+            } 
+        }
+        
+        function exitVersus() { 
+            playSound('click'); 
+            clearInterval(vsInt); 
+            clearInterval(vsPreTimer); // Kill background countdown
+            vsActive = false; 
+            
+            // Clean up DOM so next game doesn't look squished
+            document.getElementById('vs-area-p1').style.height = "50%";
+            document.getElementById('vs-area-p2').style.height = "50%";
+            document.getElementById('vs-container').style.display = "none"; 
+            openMinigameHub(); 
+        }
+
+        // --- MODAL UTILS ---
         function showModal(id) { 
             autoPauseCheck(); 
             document.getElementById(id).style.display = "flex"; 
         }
-        function hideModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = "none"); }
+        function hideModals() { 
+            document.querySelectorAll('.modal').forEach(m => m.style.display = "none"); 
+            let wOpts = document.getElementById('wipe-options');
+            let wBtn = document.getElementById('wipe-main-btn');
+            if (wOpts) wOpts.style.display = 'none';
+            if (wBtn) wBtn.style.display = 'block';
+        }
     </script>
 </body>
 </html>
